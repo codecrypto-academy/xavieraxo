@@ -1,0 +1,32 @@
+{
+  "name": "primermodulo",
+  "version": "1.0.0",
+  "description": "todos los ejercicios de remix pero aca",
+  "license": "ISC",
+  "author": "",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-chai-matchers": "^2.1.0",
+    "@nomicfoundation/hardhat-ethers": "^4.0.0",
+    "@nomicfoundation/hardhat-ignition": "^3.0.2",
+    "@nomicfoundation/hardhat-network-helpers": "^3.0.0",
+    "@nomicfoundation/hardhat-toolbox": "^6.1.0",
+    "@nomicfoundation/hardhat-toolbox-viem": "^5.0.0",
+    "@nomicfoundation/hardhat-verify": "^3.0.1",
+    "@types/node": "^22.18.1",
+    "chai": "^6.0.1",
+    "ethers": "^6.15.0",
+    "forge-std": "github:foundry-rs/forge-std#v1.9.4",
+    "hardhat": "^3.0.4",
+    "ts-node": "^10.9.2",
+    "typescript": "~5.8.0",
+    "viem": "^2.37.4"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.2"
+  }
+}
