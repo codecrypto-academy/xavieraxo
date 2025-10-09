@@ -1,0 +1,14 @@
+{
+    "wake.compiler.solc.remappings": [
+      "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+      "forge-std/=lib/forge-std/src/",
+      "openzeppelin-contracts/=lib/openzeppelin-contracts/"
+    ],
+    
+  "solidity.remappings": [
+    "forge-std/=lib/forge-std/src/",
+    "src/=src/"
+  ],
+  "solidity.defaultCompiler": "remote",
+  "solidity.compileUsingRemoteVersion": "v0.8.20+commit.a1b79de6"
+}
