@@ -1,65 +1,53 @@
-# Proyecto de Ejercicios Solidity - Foundry
+# CodeCripto - Repositorio de Ejercicios y Proyectos
 
-Este proyecto contiene todos los ejercicios de Solidity organizados en un solo proyecto Foundry.
+Este repositorio contiene múltiples proyectos y ejercicios organizados en carpetas separadas.
 
-## Estructura del Proyecto
+## 📁 Estructura del Repositorio
 
 ```
-├── src/                    # Contratos Solidity
-│   ├── HolaMundo.sol      # Ejercicio 1: Contrato básico con Ownable
-│   ├── Counter.sol        # Ejercicio 2: Contador simple con eventos
-│   └── StorageBox.sol     # Ejercicio 3: Almacenamiento de datos
-├── test/                   # Tests para los contratos
-│   ├── testHolaMundo.t.sol
-│   ├── Counter.t.sol
-│   └── StorageBox.t.sol
-├── lib/                    # Dependencias (OpenZeppelin, etc.)
-├── script/                 # Scripts de deployment
-├── foundry.toml           # Configuración de Foundry
-└── README.md              # Este archivo
+xavieraxo/
+├── Solidity de 0 a 100/     # Proyecto completo de Solidity con Foundry
+├── Cursor/                   # Ejercicios de bases de datos y Python
+└── [Futuras carpetas]        # Espacio para más ejercicios y proyectos
 ```
 
-## Ejercicios Incluidos
+## 📚 Proyectos Incluidos
 
-### Ejercicio 1: HolaMundo
-- Contrato básico que hereda de Ownable de OpenZeppelin
-- Funciones para obtener y actualizar un mensaje
-- Solo el owner puede actualizar el mensaje
+### Solidity de 0 a 100
+Proyecto completo de Solidity usando Foundry con múltiples contratos inteligentes y ejercicios prácticos.
+- Contratos de ejemplo (HolaMundo, Counter, StorageBox)
+- Ejercicios de práctica (NotasSeguras, AccessRoles, etc.)
+- Tests completos para cada contrato
+- Configuración de Foundry lista para usar
 
-### Ejercicio 2: Counter
-- Contador simple con eventos
-- Funciones `inc()` e `incBy(uint)`
-- Validación de parámetros positivos
+[Ver más detalles →](./Solidity%20de%200%20a%20100/README.md)
 
-### Ejercicio 3: StorageBox
-- Almacenamiento de diferentes tipos de datos
-- Variables: uint256, string, array dinámico
-- Funciones getter/setter para cada tipo
+### Cursor
+Ejercicios de bases de datos con Northwind y consultas SQL/Python.
 
-## Instalación y Uso
+## 🚀 Cómo Usar Este Repositorio
 
-1. Instalar Foundry si no lo tienes:
+Cada carpeta es un proyecto independiente con su propia estructura y configuración. 
+
+Para trabajar en un proyecto específico:
+
+1. Navega a la carpeta del proyecto:
    ```bash
-   curl -L https://foundry.paradigm.xyz | bash
-   foundryup
+   cd "Solidity de 0 a 100"
    ```
 
-2. Instalar dependencias:
-   ```bash
-   forge install
-   ```
+2. Sigue las instrucciones del README de ese proyecto.
 
-3. Compilar contratos:
-   ```bash
-   forge build
-   ```
+## 📝 Agregar Nuevos Proyectos
 
-4. Ejecutar tests:
-   ```bash
-   forge test
-   ```
+Para agregar un nuevo proyecto o conjunto de ejercicios:
 
-## Carpetas Preservadas
+1. Crea una nueva carpeta en la raíz con un nombre descriptivo
+2. Organiza tus archivos dentro de esa carpeta
+3. Incluye un README.md explicando el proyecto
+4. Actualiza este README principal para listar el nuevo proyecto
 
-- `Cursor/`: Contiene ejercicios específicos de la capacitación
-- `Ejercicios/`: Contiene el proyecto Hardhat original (preservado como referencia)
+## 📫 Contacto
+
+Este es un repositorio de capacitación para CodeCripto.
+
