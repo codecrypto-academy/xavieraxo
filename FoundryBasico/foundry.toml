@@ -1,0 +1,35 @@
+[profile.default]
+src = "src"
+out = "out"
+libs = ["lib"]
+test = "test"
+cache_path = "cache"
+
+# Configuración del compilador Solidity
+solc_version = "0.8.20"
+optimizer = true
+optimizer_runs = 200
+via_ir = false
+
+# Configuración de remappings
+remappings = [
+    "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
+    "forge-std/=lib/forge-std/src/"
+]
+
+# Configuración de tests
+verbosity = 3
+fuzz = { runs = 256 }
+
+# Configuración de formateo
+[fmt]
+line_length = 100
+tab_width = 4
+bracket_spacing = true
+int_types = "long"
+multiline_func_header = "all"
+quote_style = "double"
+number_underscore = "thousands"
+
+# See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
+

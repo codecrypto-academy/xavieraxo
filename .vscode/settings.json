@@ -1,9 +1,5 @@
 {
-    "wake.compiler.solc.remappings": [
-      "@openzeppelin/contracts/=lib/openzeppelin-contracts/contracts/",
-      "forge-std/=lib/forge-std/src/",
-      "openzeppelin-contracts/=lib/openzeppelin-contracts/"
-    ],
+    "wake.compiler.solc.remappings": [],
     
   "solidity.remappings": [
     "forge-std/=lib/forge-std/src/",

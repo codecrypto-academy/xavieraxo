@@ -7,6 +7,7 @@ Este repositorio contiene múltiples proyectos y ejercicios organizados en carpe
 ```
 xavieraxo/
 ├── Solidity de 0 a 100/     # Proyecto completo de Solidity con Foundry
+├── FoundryBasico/            # Proyecto base de Foundry para nuevos ejercicios
 ├── Cursor/                   # Ejercicios de bases de datos y Python
 └── [Futuras carpetas]        # Espacio para más ejercicios y proyectos
 ```
@@ -22,6 +23,17 @@ Proyecto completo de Solidity usando Foundry con múltiples contratos inteligent
 
 [Ver más detalles →](./Solidity%20de%200%20a%20100/README.md)
 
+### FoundryBasico
+Proyecto base de Foundry completamente configurado y listo para usar.
+- Estructura de carpetas estándar (src, test, script, lib)
+- Dependencias instaladas (forge-std, OpenZeppelin)
+- Contrato de ejemplo con tests completos
+- Script de deployment incluido
+- README con guías y comandos útiles
+- Perfecto para comenzar nuevos ejercicios de Solidity
+
+[Ver más detalles →](./FoundryBasico/README.md)
+
 ### Cursor
 Ejercicios de bases de datos con Northwind y consultas SQL/Python.
 
@@ -33,10 +45,29 @@ Para trabajar en un proyecto específico:
 
 1. Navega a la carpeta del proyecto:
    ```bash
+   # Para el proyecto principal de Solidity
    cd "Solidity de 0 a 100"
+   
+   # Para el proyecto base de Foundry
+   cd FoundryBasico
    ```
 
 2. Sigue las instrucciones del README de ese proyecto.
+
+### Inicio Rápido con FoundryBasico
+
+```bash
+cd FoundryBasico
+
+# Compilar
+forge build
+
+# Ejecutar tests
+forge test
+
+# Ver tests con detalles
+forge test -vv
+```
 
 ## 📝 Agregar Nuevos Proyectos
 
