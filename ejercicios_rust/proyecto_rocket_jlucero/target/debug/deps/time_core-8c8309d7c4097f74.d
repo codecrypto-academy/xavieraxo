@@ -1,0 +1,10 @@
+E:\Documents\Capacitaciones\CodeCripto\CodeCriptoRepo\xavieraxo\ejercicios_rust\proyecto_rocket_jlucero\target\debug\deps\time_core-8c8309d7c4097f74.d: C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\lib.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\convert.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\hint.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\util.rs
+
+E:\Documents\Capacitaciones\CodeCripto\CodeCriptoRepo\xavieraxo\ejercicios_rust\proyecto_rocket_jlucero\target\debug\deps\libtime_core-8c8309d7c4097f74.rlib: C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\lib.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\convert.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\hint.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\util.rs
+
+E:\Documents\Capacitaciones\CodeCripto\CodeCriptoRepo\xavieraxo\ejercicios_rust\proyecto_rocket_jlucero\target\debug\deps\libtime_core-8c8309d7c4097f74.rmeta: C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\lib.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\convert.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\hint.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\util.rs
+
+C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\lib.rs:
+C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\convert.rs:
+C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\hint.rs:
+C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\time-core-0.1.8\src\util.rs:

@@ -1,0 +1,9 @@
+E:\Documents\Capacitaciones\CodeCripto\CodeCriptoRepo\xavieraxo\ejercicios_rust\proyecto_rocket_jlucero\target\debug\deps\inlinable_string-57d63bbd198f6d9f.d: C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\inlinable_string-0.1.15\src\lib.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\inlinable_string-0.1.15\src\inline_string.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\inlinable_string-0.1.15\src\string_ext.rs
+
+E:\Documents\Capacitaciones\CodeCripto\CodeCriptoRepo\xavieraxo\ejercicios_rust\proyecto_rocket_jlucero\target\debug\deps\libinlinable_string-57d63bbd198f6d9f.rlib: C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\inlinable_string-0.1.15\src\lib.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\inlinable_string-0.1.15\src\inline_string.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\inlinable_string-0.1.15\src\string_ext.rs
+
+E:\Documents\Capacitaciones\CodeCripto\CodeCriptoRepo\xavieraxo\ejercicios_rust\proyecto_rocket_jlucero\target\debug\deps\libinlinable_string-57d63bbd198f6d9f.rmeta: C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\inlinable_string-0.1.15\src\lib.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\inlinable_string-0.1.15\src\inline_string.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\inlinable_string-0.1.15\src\string_ext.rs
+
+C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\inlinable_string-0.1.15\src\lib.rs:
+C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\inlinable_string-0.1.15\src\inline_string.rs:
+C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\inlinable_string-0.1.15\src\string_ext.rs:

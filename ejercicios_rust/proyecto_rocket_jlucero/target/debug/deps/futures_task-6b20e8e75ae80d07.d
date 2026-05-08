@@ -1,0 +1,10 @@
+E:\Documents\Capacitaciones\CodeCripto\CodeCriptoRepo\xavieraxo\ejercicios_rust\proyecto_rocket_jlucero\target\debug\deps\futures_task-6b20e8e75ae80d07.d: C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\lib.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\spawn.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\future_obj.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\noop_waker.rs
+
+E:\Documents\Capacitaciones\CodeCripto\CodeCriptoRepo\xavieraxo\ejercicios_rust\proyecto_rocket_jlucero\target\debug\deps\libfutures_task-6b20e8e75ae80d07.rlib: C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\lib.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\spawn.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\future_obj.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\noop_waker.rs
+
+E:\Documents\Capacitaciones\CodeCripto\CodeCriptoRepo\xavieraxo\ejercicios_rust\proyecto_rocket_jlucero\target\debug\deps\libfutures_task-6b20e8e75ae80d07.rmeta: C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\lib.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\spawn.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\future_obj.rs C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\noop_waker.rs
+
+C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\lib.rs:
+C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\spawn.rs:
+C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\future_obj.rs:
+C:\Users\NoxiePC\.cargo\registry\src\index.crates.io-1949cf8c6b5b557f\futures-task-0.3.32\src\noop_waker.rs:
