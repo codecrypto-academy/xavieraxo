@@ -1,0 +1,1 @@
+E:\Documents\Capacitaciones\CodeCripto\CodeCriptoRepo\xavieraxo\ejercicios_rust\proyecto_rocket_jlucero\target\debug\proyecto_rocket.exe: E:\Documents\Capacitaciones\CodeCripto\CodeCriptoRepo\xavieraxo\ejercicios_rust\proyecto_rocket_jlucero\src\main.rs
