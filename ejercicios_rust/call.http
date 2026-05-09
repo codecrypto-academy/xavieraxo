@@ -1,10 +1,13 @@
 ###
 
 GET http://127.0.0.1:8090/
-
+Accept: application/json
 ###
 
 GET http://127.0.0.1:8090/api/hola
+Accept: application/json
 
 
-
+### 
+GET http://127.0.0.1:8090/item/42/Juan/juan@gmail.com
+Accept: application/json
