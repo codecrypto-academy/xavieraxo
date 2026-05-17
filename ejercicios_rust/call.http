@@ -7,7 +7,24 @@ Accept: application/json
 GET http://127.0.0.1:8090/api/hola
 Accept: application/json
 
+###
+
+GET http://127.0.0.1:8090/api/items
+Accept: application/json
 
 ### 
+
 GET http://127.0.0.1:8090/item/42/Juan/juan@gmail.com
 Accept: application/json
+
+###
+
+GET http://127.0.0.1:8090/lista?tennant=156&person_name=Marcelo_Crotta&page=42&registros=10&orden=asc
+Accept: application/json
+
+###
+
+GET http://127.0.0.1:8090/itemsMultiple?ids=1&ids=2&ids=3&ids=4
+Accept: application/json
+
+### 
