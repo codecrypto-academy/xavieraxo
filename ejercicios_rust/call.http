@@ -27,4 +27,17 @@ Accept: application/json
 GET http://127.0.0.1:8090/itemsMultiple?ids=1&ids=2&ids=3&ids=4
 Accept: application/json
 
-### 
+###
+
+POST http://127.0.0.1:8090/producto
+Content-Type: application/json
+Accept: application/json
+
+{
+    "id": 1,
+    "nombre": "Producto de prueba",
+    "precio": 99.99
+}
+
+###
+

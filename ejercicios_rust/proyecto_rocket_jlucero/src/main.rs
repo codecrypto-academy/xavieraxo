@@ -1,6 +1,16 @@
 #[macro_use]
 extern crate rocket;
 
+use rocket::serde::{Deserialize, Serialize, json::Json};
+
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "rocket::serde")]
+struct Producto {
+    id: u32,
+    nombre: String,
+    precio: f64,
+}
+
 #[get("/")]
 fn index() -> &'static str {
     "Servidor Rocket OK — prueba GET en /"
@@ -35,7 +45,15 @@ fn get_multiples_ids(ids: Vec<String>) -> String {
     format!("IDs recibidos: {:?}", ids)
 }
 
+
+
+/// POST con body JSON: recibe un Producto y lo devuelve con confirmación
+#[post("/producto", format = "json", data = "<producto>")]
+fn crear_producto(producto: Json<Producto>) -> Json<Producto> {
+    producto
+}
+
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index, hola, ger_item, lista, get_multiples_ids])
+    rocket::build().mount("/", routes![index, hola, ger_item, lista, get_multiples_ids, crear_producto])
 }
