@@ -41,3 +41,15 @@ Accept: application/json
 
 ###
 
+POST http://127.0.0.1:8090/person/emprtesa/juan
+Content-Type: application/json
+Accept: application/json
+
+{
+    "nombre": "Juan",
+    "edad": 30,
+    "saldo": 1500.75
+}
+
+###
+

@@ -2,6 +2,8 @@
 extern crate rocket;
 
 use rocket::serde::{Deserialize, Serialize, json::Json};
+use rocket::serde::json::Value;
+use rocket::serde::json::serde_json::json;
 
 #[derive(Serialize, Deserialize)]
 #[serde(crate = "rocket::serde")]
@@ -9,6 +11,14 @@ struct Producto {
     id: u32,
     nombre: String,
     precio: f64,
+}
+
+#[derive(Serialize, Deserialize)]
+#[serde(crate = "rocket::serde")]
+struct Person {
+    nombre: String,
+    edad: Option<u32>,
+    saldo: Option<f64>,
 }
 
 #[get("/")]
@@ -53,7 +63,22 @@ fn crear_producto(producto: Json<Producto>) -> Json<Producto> {
     producto
 }
 
+/// POST con body JSON: recibe empresa y nombre en la ruta, datos de Person en el body
+#[post("/person/<empresa>/<nombre>", format = "json", data = "<person>")]
+fn crear_person(empresa: &str, nombre: &str, person: Json<Person>) -> String {
+    format!(
+        "Empresa: {}, Nombre: {}, Person -> nombre: {}, edad: {}, saldo: {}",
+        empresa, 
+        nombre, 
+        person.nombre, 
+        person.edad.unwrap_or(10), 
+        person.saldo.unwrap_or(20.4)
+    )
+}
+
+
+
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index, hola, ger_item, lista, get_multiples_ids, crear_producto])
+    rocket::build().mount("/", routes![index, hola, ger_item, lista, get_multiples_ids, crear_producto, crear_person])
 }
