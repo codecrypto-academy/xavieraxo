@@ -4,21 +4,31 @@ extern crate rocket;
 use rocket::serde::{Deserialize, Serialize, json::Json};
 use rocket::serde::json::Value;
 use rocket::serde::json::serde_json::json;
+use rocket::form::{Form, FromForm};
+use rocket::fs::TempFile;
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, FromForm)]
 #[serde(crate = "rocket::serde")]
 struct Producto {
     id: u32,
     nombre: String,
     precio: f64,
+    saldo: Option<f64>,
 }
 
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, FromForm)]
 #[serde(crate = "rocket::serde")]
 struct Person {
     nombre: String,
     edad: Option<u32>,
     saldo: Option<f64>,
+}
+
+#[derive(FromForm)]
+struct MultipartData<'r> {
+    campo1: String,
+    campo2: String,
+    archivo: TempFile<'r>,
 }
 
 #[get("/")]
@@ -76,9 +86,81 @@ fn crear_person(empresa: &str, nombre: &str, person: Json<Person>) -> String {
     )
 }
 
+/// POST recibiendo JSON libre (sin struct)
+#[post("/json-libre", format = "json", data = "<payload>")]
+fn json_libre(payload: Json<Value>) -> Json<Value> {
+    Json(json!({
+        "ok": true,
+        "recibido": payload.into_inner()
+    }))
+}
+
+/// POST con body x-www-form-urlencoded usando struct Person
+#[post("/person-urlencode", data = "<person>")]
+fn crear_person_urlencode(person: Form<Person>) -> String {
+    let person = person.into_inner();
+    format!(
+        "Person (urlencoded) -> nombre: {}, edad: {}, saldo: {}",
+        person.nombre,
+        person.edad.unwrap_or(10),
+        person.saldo.unwrap_or(20.4)
+    )
+}
+
+/// POST con body x-www-form-urlencoded usando struct Producto
+#[post("/producto-urlencode", data = "<producto>")]
+fn crear_producto_urlencode(producto: Form<Producto>) -> String {
+    let producto = producto.into_inner();
+    format!(
+        "Producto (urlencoded) -> id: {}, nombre: {}, precio: {}, saldo: {}",
+        producto.id,
+        producto.nombre,
+        producto.precio,
+        producto.saldo.unwrap_or(0.0)
+    )
+}
+
+/// POST multipart/form-data con dos campos y archivo text/plain
+#[post("/multipar", data = "<data>")]
+async fn post_multipar(mut data: Form<MultipartData<'_>>) -> String {
+    let content_type = data
+        .archivo
+        .content_type()
+        .map(|ct| ct.to_string())
+        .unwrap_or_else(|| "sin-content-type".to_string());
+
+    if content_type != "text/plain" {
+        return format!(
+            "Tipo de archivo inválido. Se esperaba text/plain y llegó: {}",
+            content_type
+        );
+    }
+
+    format!(
+        "Multipart OK -> campo1: {}, campo2: {}, archivo: {} ({})",
+        data.campo1,
+        data.campo2,
+        data.archivo
+            .name()
+            .map(|n| n.to_string())
+            .unwrap_or_else(|| "sin_nombre".to_string()),
+        content_type
+    )
+}
+
 
 
 #[launch]
 fn rocket() -> _ {
-    rocket::build().mount("/", routes![index, hola, ger_item, lista, get_multiples_ids, crear_producto, crear_person])
+    rocket::build().mount("/", routes![index
+                                     , hola
+                                     , ger_item
+                                     , lista
+                                     , get_multiples_ids
+                                     , crear_producto
+                                     , crear_person
+                                     , json_libre
+                                     , crear_person_urlencode
+                                     , crear_producto_urlencode
+                                     , post_multipar])
 }
