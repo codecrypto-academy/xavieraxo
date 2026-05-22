@@ -3,8 +3,8 @@
 Este archivo actúa como el mapa de ruta y control de estado para los agentes de IA y el desarrollador. Cada tarea debe completarse secuencialmente respetando las `GitRules.md`.
 
 ## 📌 ESTADO GLOBAL DEL PROYECTO
-* **Progreso Actual:** 50%
-* **Rama Actual:** rustapi-#4
+* **Progreso Actual:** 20%
+* **Rama Actual:** rustapi-#2
 
 ---
 
@@ -18,8 +18,8 @@ Este archivo actúa como el mapa de ruta y control de estado para los agentes de
 
 ### FASE 2: DESARROLLO DEL BACKEND (RUST & ROCKET)
 #### Rama Objetivo: rustapi-#2 (Configuración del Servidor)
-- [ ] TAREA 2.1: Configurar el archivo `Cargo.toml` con las dependencias requeridas (`rocket`, `rusqlite`, `serde`, `serde_json`).
-- [ ] TAREA 2.2: Crear el servidor Rocket base (Hola Mundo) y configurar el puerto `8001`.
+- [x] TAREA 2.1: Configurar el archivo `Cargo.toml` con las dependencias requeridas (`rocket`, `rusqlite`, `serde`, `serde_json`).
+- [x] TAREA 2.2: Crear el servidor Rocket base (Hola Mundo) y configurar el puerto `8001`.
 
 #### Rama Objetivo: rustapi-#3 (Base de Datos y Persistencia)
 - [ ] TAREA 2.3: Descargar e integrar el archivo de base de datos `northwind.db` en la raíz del backend.
@@ -46,6 +46,5 @@ Este archivo actúa como el mapa de ruta y control de estado para los agentes de
 
 ## 📝 HISTORIAL DE CAMBIOS Y PASOS EJECUTADOS
 *(El desarrollador registrará aquí qué se hizo en cada rama al momento del cierre de la misma)*
-* **[2026-05-21] - Rama rustapi-#3:** Se agregaron dependencias `rocket`, `rusqlite` y `serde` con `derive`. Se implementó el endpoint `GET /customers/<id>` usando `State<Mutex<Connection>>`, consulta SQL con `prepare(...).unwrap()`, `query_map(params![id], |row| ...)` y manejo de resultado con `match rows.next()` para devolver JSON o `404 NotFound`.
-* **[2026-05-21] - Rama rustapi-#4:** Se añadió `Deserialize` y `Debug` a la struct `Customer`. Se implementaron `POST /customers` (INSERT con todas las columnas explícitas), `PUT /customers/<id>` (UPDATE con ?11 para el id en WHERE) y `DELETE /customers/<id>` (devuelve `Json<bool>` según `rows_affected > 0`).
+* **[2026-05-20] - Rama rustapi-#2:** Se configuró `Cargo.toml` con dependencias `rocket 0.5`, `rusqlite 0.31 (bundled)`, `serde` y `serde_json`. Se implementó `main.rs` con servidor Rocket en puerto 8001, estado global `Mutex<Connection>`, CORS fairing personalizado y rutas stub compilables para `get_customers`, `create`, `update`, `delete` y `get_customer`.
 * **[Fecha] - Rama rustapi-#X:** (Esperando inicio...)
