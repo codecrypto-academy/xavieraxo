@@ -23,12 +23,12 @@ Este archivo actúa como el mapa de ruta y control de estado para los agentes de
 
 #### Rama Objetivo: rustapi-#3 (Base de Datos y Persistencia)
 - [ ] TAREA 2.3: Descargar e integrar el archivo de base de datos `northwind.db` en la raíz del backend.
-- [ ] TAREA 2.4: Implementar el módulo de conexión segura a SQLite utilizando `Mutex` para asegurar el acceso multi-hilo (Thread-safe).
+- [x] TAREA 2.4: Implementar el módulo de conexión segura a SQLite utilizando `Mutex` para asegurar el acceso multi-hilo (Thread-safe).
 
 #### Rama Objetivo: rustapi-#4 (Endpoints CRUD de Clientes)
-- [ ] TAREA 2.5: Crear los modelos/estructuras de datos de Clientes (Customer) con soporte de serialización `Serde`.
+- [x] TAREA 2.5: Crear los modelos/estructuras de datos de Clientes (Customer) con soporte de serialización `Serde`.
 - [ ] TAREA 2.6: Implementar el Endpoint GET para listar clientes con paginación, filtros y ordenamiento.
-- [ ] TAREA 2.7: Implementar los Endpoints de lectura por ID, creación (POST), actualización (PUT) y eliminación (DELETE).
+- [x] TAREA 2.7: Implementar los Endpoints de lectura por ID, creación (POST), actualización (PUT) y eliminación (DELETE).
 - [ ] TAREA 2.8: Configurar y habilitar los bloques CORS en Rocket para permitir peticiones desde el puerto `3000`.
 
 ### FASE 3: DESARROLLO DEL FRONTEND (NEXT.JS & TS)
