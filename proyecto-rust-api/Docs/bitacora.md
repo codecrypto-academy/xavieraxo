@@ -3,8 +3,8 @@
 Este archivo actúa como el mapa de ruta y control de estado para los agentes de IA y el desarrollador. Cada tarea debe completarse secuencialmente respetando las `GitRules.md`.
 
 ## 📌 ESTADO GLOBAL DEL PROYECTO
-* **Progreso Actual:** 0%
-* **Rama Actual:** Ninguna
+* **Progreso Actual:** 50%
+* **Rama Actual:** rustapi-#4
 
 ---
 
@@ -23,12 +23,12 @@ Este archivo actúa como el mapa de ruta y control de estado para los agentes de
 
 #### Rama Objetivo: rustapi-#3 (Base de Datos y Persistencia)
 - [ ] TAREA 2.3: Descargar e integrar el archivo de base de datos `northwind.db` en la raíz del backend.
-- [ ] TAREA 2.4: Implementar el módulo de conexión segura a SQLite utilizando `Mutex` para asegurar el acceso multi-hilo (Thread-safe).
+- [x] TAREA 2.4: Implementar el módulo de conexión segura a SQLite utilizando `Mutex` para asegurar el acceso multi-hilo (Thread-safe).
 
 #### Rama Objetivo: rustapi-#4 (Endpoints CRUD de Clientes)
-- [ ] TAREA 2.5: Crear los modelos/estructuras de datos de Clientes (Customer) con soporte de serialización `Serde`.
+- [x] TAREA 2.5: Crear los modelos/estructuras de datos de Clientes (Customer) con soporte de serialización `Serde`.
 - [ ] TAREA 2.6: Implementar el Endpoint GET para listar clientes con paginación, filtros y ordenamiento.
-- [ ] TAREA 2.7: Implementar los Endpoints de lectura por ID, creación (POST), actualización (PUT) y eliminación (DELETE).
+- [x] TAREA 2.7: Implementar los Endpoints de lectura por ID, creación (POST), actualización (PUT) y eliminación (DELETE).
 - [ ] TAREA 2.8: Configurar y habilitar los bloques CORS en Rocket para permitir peticiones desde el puerto `3000`.
 
 ### FASE 3: DESARROLLO DEL FRONTEND (NEXT.JS & TS)
@@ -46,4 +46,6 @@ Este archivo actúa como el mapa de ruta y control de estado para los agentes de
 
 ## 📝 HISTORIAL DE CAMBIOS Y PASOS EJECUTADOS
 *(El desarrollador registrará aquí qué se hizo en cada rama al momento del cierre de la misma)*
+* **[2026-05-21] - Rama rustapi-#3:** Se agregaron dependencias `rocket`, `rusqlite` y `serde` con `derive`. Se implementó el endpoint `GET /customers/<id>` usando `State<Mutex<Connection>>`, consulta SQL con `prepare(...).unwrap()`, `query_map(params![id], |row| ...)` y manejo de resultado con `match rows.next()` para devolver JSON o `404 NotFound`.
+* **[2026-05-21] - Rama rustapi-#4:** Se añadió `Deserialize` y `Debug` a la struct `Customer`. Se implementaron `POST /customers` (INSERT con todas las columnas explícitas), `PUT /customers/<id>` (UPDATE con ?11 para el id en WHERE) y `DELETE /customers/<id>` (devuelve `Json<bool>` según `rows_affected > 0`).
 * **[Fecha] - Rama rustapi-#X:** (Esperando inicio...)
