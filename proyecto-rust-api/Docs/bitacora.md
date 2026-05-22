@@ -3,8 +3,8 @@
 Este archivo actúa como el mapa de ruta y control de estado para los agentes de IA y el desarrollador. Cada tarea debe completarse secuencialmente respetando las `GitRules.md`.
 
 ## 📌 ESTADO GLOBAL DEL PROYECTO
-* **Progreso Actual:** 20%
-* **Rama Actual:** rustapi-#2
+* **Progreso Actual:** 40%
+* **Rama Actual:** rustapi-#5
 
 ---
 
@@ -27,7 +27,7 @@ Este archivo actúa como el mapa de ruta y control de estado para los agentes de
 
 #### Rama Objetivo: rustapi-#4 (Endpoints CRUD de Clientes)
 - [x] TAREA 2.5: Crear los modelos/estructuras de datos de Clientes (Customer) con soporte de serialización `Serde`.
-- [ ] TAREA 2.6: Implementar el Endpoint GET para listar clientes con paginación, filtros y ordenamiento.
+- [x] TAREA 2.6: Implementar el Endpoint GET para listar clientes con paginación, filtros y ordenamiento.
 - [x] TAREA 2.7: Implementar los Endpoints de lectura por ID, creación (POST), actualización (PUT) y eliminación (DELETE).
 - [ ] TAREA 2.8: Configurar y habilitar los bloques CORS en Rocket para permitir peticiones desde el puerto `3000`.
 
@@ -47,4 +47,4 @@ Este archivo actúa como el mapa de ruta y control de estado para los agentes de
 ## 📝 HISTORIAL DE CAMBIOS Y PASOS EJECUTADOS
 *(El desarrollador registrará aquí qué se hizo en cada rama al momento del cierre de la misma)*
 * **[2026-05-20] - Rama rustapi-#2:** Se configuró `Cargo.toml` con dependencias `rocket 0.5`, `rusqlite 0.31 (bundled)`, `serde` y `serde_json`. Se implementó `main.rs` con servidor Rocket en puerto 8001, estado global `Mutex<Connection>`, CORS fairing personalizado y rutas stub compilables para `get_customers`, `create`, `update`, `delete` y `get_customer`.
-* **[Fecha] - Rama rustapi-#X:** (Esperando inicio...)
+* **[2026-05-22] - Rama rustapi-#5:** Se implementó el endpoint `GET /customers` con paginación (`page`, `per_page`), filtrado dinámico por nombre (`name_filter` con LIKE), ordenamiento (`order_by`, `order_direction`) y construcción dinámica de query SQL con parámetros seguros (`Vec<Box<dyn ToSql>>`). Se añadió whitelist de columnas para prevenir SQL injection en ORDER BY. Se importó `ToSql` de rusqlite y se montó la nueva ruta junto a `get_customer` en el servidor Rocket.
