@@ -84,7 +84,6 @@ dependencies = [
  "rocket",
  "rusqlite",
  "serde",
- "serde_json",
 ]
 
 [[package]]
