@@ -3,8 +3,8 @@
 Este archivo actúa como el mapa de ruta y control de estado para los agentes de IA y el desarrollador. Cada tarea debe completarse secuencialmente respetando las `GitRules.md`.
 
 ## 📌 ESTADO GLOBAL DEL PROYECTO
-* **Progreso Actual:** 40%
-* **Rama Actual:** rustapi-#5
+* **Progreso Actual:** 55%
+* **Rama Actual:** rustapi-#6
 
 ---
 
@@ -33,8 +33,8 @@ Este archivo actúa como el mapa de ruta y control de estado para los agentes de
 
 ### FASE 3: DESARROLLO DEL FRONTEND (NEXT.JS & TS)
 #### Rama Objetivo: rustapi-#5 (Configuración y Cliente API)
-- [ ] TAREA 3.1: Instalar dependencias de UI (Material-UI o Styled Components) y Axios en el frontend.
-- [ ] TAREA 3.2: Crear el cliente Axios configurado para apuntar a `http://127.0.0.1:8001`.
+- [x] TAREA 3.1: Instalar shadcn/ui e inicializar con `npx shadcn@latest init -d`. Generados: `components.json`, `components/ui/button.tsx`, `lib/utils.ts`, directorio `hooks/`.
+- [x] TAREA 3.2: Crear `lib/api.ts` ("use server") con funciones `get_customers`, `get_customer`, `create_customer`, `update_customer` y `delete_customer` apuntando a `http://127.0.0.1:8001` via `.env`.
 
 #### Rama Objetivo: rustapi-#6 (Componentes e Interfaz de Usuario)
 - [ ] TAREA 3.3: Desarrollar la vista principal de Clientes con tabla responsiva y paginación nativa.
@@ -48,3 +48,4 @@ Este archivo actúa como el mapa de ruta y control de estado para los agentes de
 *(El desarrollador registrará aquí qué se hizo en cada rama al momento del cierre de la misma)*
 * **[2026-05-20] - Rama rustapi-#2:** Se configuró `Cargo.toml` con dependencias `rocket 0.5`, `rusqlite 0.31 (bundled)`, `serde` y `serde_json`. Se implementó `main.rs` con servidor Rocket en puerto 8001, estado global `Mutex<Connection>`, CORS fairing personalizado y rutas stub compilables para `get_customers`, `create`, `update`, `delete` y `get_customer`.
 * **[2026-05-22] - Rama rustapi-#5:** Se implementó el endpoint `GET /customers` con paginación (`page`, `per_page`), filtrado dinámico por nombre (`name_filter` con LIKE), ordenamiento (`order_by`, `order_direction`) y construcción dinámica de query SQL con parámetros seguros (`Vec<Box<dyn ToSql>>`). Se añadió whitelist de columnas para prevenir SQL injection en ORDER BY. Se importó `ToSql` de rusqlite y se montó la nueva ruta junto a `get_customer` en el servidor Rocket.
+* **[2026-05-22] - Rama rustapi-#6:** Se inicializó shadcn/ui v4.8. Generados: `components.json`, `components/ui/button.tsx`, `lib/utils.ts`, directorio `hooks/`. Creado `.env` con `NEXT_PUBLIC_API_URL=http://127.0.0.1:8001`. Creado `lib/types.ts` con interfaces `Customer` y `QueryParams`. Creado `lib/api.ts` con directiva `"use server"` e implementación de `get_customers` (URLSearchParams dinamico via Object.entries), `get_customer`, `create_customer`, `update_customer` y `delete_customer`.
