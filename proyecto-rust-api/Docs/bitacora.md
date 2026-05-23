@@ -3,8 +3,8 @@
 Este archivo actúa como el mapa de ruta y control de estado para los agentes de IA y el desarrollador. Cada tarea debe completarse secuencialmente respetando las `GitRules.md`.
 
 ## 📌 ESTADO GLOBAL DEL PROYECTO
-* **Progreso Actual:** 55%
-* **Rama Actual:** rustapi-#6
+* **Progreso Actual:** 72%
+* **Rama Actual:** rustapi-#7
 
 ---
 
@@ -39,8 +39,8 @@ Este archivo actúa como el mapa de ruta y control de estado para los agentes de
 #### Rama Objetivo: rustapi-#6 (Componentes e Interfaz de Usuario)
 - [ ] TAREA 3.3: Desarrollar la vista principal de Clientes con tabla responsiva y paginación nativa.
 - [ ] TAREA 3.4: Implementar los componentes de búsqueda y filtrado de registros.
-- [ ] TAREA 3.5: Desarrollar el formulario para añadir y editar clientes (reutilizable) con validación de campos.
-- [ ] TAREA 3.6: Integrar las acciones de eliminación y control de estados globales.
+- [x] TAREA 3.5: Desarrollar el formulario para añadir y editar clientes (reutilizable) con validación de campos.
+- [x] TAREA 3.6: Integrar acciones de edición/eliminación y estados de carga/errores en rutas de detalle y edición.
 
 ---
 
@@ -49,3 +49,4 @@ Este archivo actúa como el mapa de ruta y control de estado para los agentes de
 * **[2026-05-20] - Rama rustapi-#2:** Se configuró `Cargo.toml` con dependencias `rocket 0.5`, `rusqlite 0.31 (bundled)`, `serde` y `serde_json`. Se implementó `main.rs` con servidor Rocket en puerto 8001, estado global `Mutex<Connection>`, CORS fairing personalizado y rutas stub compilables para `get_customers`, `create`, `update`, `delete` y `get_customer`.
 * **[2026-05-22] - Rama rustapi-#5:** Se implementó el endpoint `GET /customers` con paginación (`page`, `per_page`), filtrado dinámico por nombre (`name_filter` con LIKE), ordenamiento (`order_by`, `order_direction`) y construcción dinámica de query SQL con parámetros seguros (`Vec<Box<dyn ToSql>>`). Se añadió whitelist de columnas para prevenir SQL injection en ORDER BY. Se importó `ToSql` de rusqlite y se montó la nueva ruta junto a `get_customer` en el servidor Rocket.
 * **[2026-05-22] - Rama rustapi-#6:** Se inicializó shadcn/ui v4.8. Generados: `components.json`, `components/ui/button.tsx`, `lib/utils.ts`, directorio `hooks/`. Creado `.env` con `NEXT_PUBLIC_API_URL=http://127.0.0.1:8001`. Creado `lib/types.ts` con interfaces `Customer` y `QueryParams`. Creado `lib/api.ts` con directiva `"use server"` e implementación de `get_customers` (URLSearchParams dinamico via Object.entries), `get_customer`, `create_customer`, `update_customer` y `delete_customer`.
+* **[2026-05-22] - Rama rustapi-#7:** Se implementó `components/customer-form.tsx` reutilizable con estado interno tipado y soporte para modo alta/edición (`initialData`). Se crearon rutas `app/customer/add/page.tsx`, `app/customer/[id]/page.tsx` y `app/customer/[id]/edit/page.tsx`. En detalle y edición se obtuvo `params.id`, carga de datos con estado (`setCustomer`) y estado de carga/error. Se integraron acciones `Editar` y `Eliminar`. Se ajustó compatibilidad de frontend para Next 13 (remoción de `use server` en `lib/api.ts`, ajuste de `layout.tsx` y `globals.css`).
