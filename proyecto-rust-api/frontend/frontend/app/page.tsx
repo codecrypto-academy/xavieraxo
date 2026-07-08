@@ -22,6 +22,7 @@ export default function Home() {
               className="dark:invert"
               width={100}
               height={24}
+              style={{ width: 'auto', height: 'auto' }}
               priority
             />
           </a>
