@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+SC/lib/
+
+# Build outputs
+frontend/.next/
+frontend/out/
+frontend/build/
+SC/out/
+SC/cache/
+SC/broadcast/
+
+# Environment variables
+.env
+.env.local
+.env*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+coverage/
