@@ -1,0 +1,52 @@
+# Bitácora de Proyecto y Análisis de Tareas (WBS)
+
+Este archivo actúa como el mapa de ruta y control de estado para los agentes de IA y el desarrollador. Cada tarea debe completarse secuencialmente respetando las `GitRules.md`.
+
+## 📌 ESTADO GLOBAL DEL PROYECTO
+* **Progreso Actual:** 72%
+* **Rama Actual:** rustapi-#7
+
+---
+
+## 🗺️ DESGLOSE DE TAREAS (WBS)
+
+### FASE 1: INFRAESTRUCTURA BASE & CONFIGURACIÓN INITIAL (Rama Objetivo: rustapi-#1)
+- [ ] TAREA 1.1: Crear la estructura de directorios del proyecto (`/backend`, `/frontend`).
+- [ ] TAREA 1.2: Inicializar el proyecto Backend con `cargo init`.
+- [ ] TAREA 1.3: Inicializar el proyecto Frontend con `npx create-next-app@latest` (Configurar con TypeScript, ESLint y directorio `/src`).
+- [ ] TAREA 1.4: Crear los archivos base de gobernanza (`GitRules.md` y `bitacora.md`) en la raíz.
+
+### FASE 2: DESARROLLO DEL BACKEND (RUST & ROCKET)
+#### Rama Objetivo: rustapi-#2 (Configuración del Servidor)
+- [x] TAREA 2.1: Configurar el archivo `Cargo.toml` con las dependencias requeridas (`rocket`, `rusqlite`, `serde`, `serde_json`).
+- [x] TAREA 2.2: Crear el servidor Rocket base (Hola Mundo) y configurar el puerto `8001`.
+
+#### Rama Objetivo: rustapi-#3 (Base de Datos y Persistencia)
+- [ ] TAREA 2.3: Descargar e integrar el archivo de base de datos `northwind.db` en la raíz del backend.
+- [x] TAREA 2.4: Implementar el módulo de conexión segura a SQLite utilizando `Mutex` para asegurar el acceso multi-hilo (Thread-safe).
+
+#### Rama Objetivo: rustapi-#4 (Endpoints CRUD de Clientes)
+- [x] TAREA 2.5: Crear los modelos/estructuras de datos de Clientes (Customer) con soporte de serialización `Serde`.
+- [x] TAREA 2.6: Implementar el Endpoint GET para listar clientes con paginación, filtros y ordenamiento.
+- [x] TAREA 2.7: Implementar los Endpoints de lectura por ID, creación (POST), actualización (PUT) y eliminación (DELETE).
+- [ ] TAREA 2.8: Configurar y habilitar los bloques CORS en Rocket para permitir peticiones desde el puerto `3000`.
+
+### FASE 3: DESARROLLO DEL FRONTEND (NEXT.JS & TS)
+#### Rama Objetivo: rustapi-#5 (Configuración y Cliente API)
+- [x] TAREA 3.1: Instalar shadcn/ui e inicializar con `npx shadcn@latest init -d`. Generados: `components.json`, `components/ui/button.tsx`, `lib/utils.ts`, directorio `hooks/`.
+- [x] TAREA 3.2: Crear `lib/api.ts` ("use server") con funciones `get_customers`, `get_customer`, `create_customer`, `update_customer` y `delete_customer` apuntando a `http://127.0.0.1:8001` via `.env`.
+
+#### Rama Objetivo: rustapi-#6 (Componentes e Interfaz de Usuario)
+- [ ] TAREA 3.3: Desarrollar la vista principal de Clientes con tabla responsiva y paginación nativa.
+- [ ] TAREA 3.4: Implementar los componentes de búsqueda y filtrado de registros.
+- [x] TAREA 3.5: Desarrollar el formulario para añadir y editar clientes (reutilizable) con validación de campos.
+- [x] TAREA 3.6: Integrar acciones de edición/eliminación y estados de carga/errores en rutas de detalle y edición.
+
+---
+
+## 📝 HISTORIAL DE CAMBIOS Y PASOS EJECUTADOS
+*(El desarrollador registrará aquí qué se hizo en cada rama al momento del cierre de la misma)*
+* **[2026-05-20] - Rama rustapi-#2:** Se configuró `Cargo.toml` con dependencias `rocket 0.5`, `rusqlite 0.31 (bundled)`, `serde` y `serde_json`. Se implementó `main.rs` con servidor Rocket en puerto 8001, estado global `Mutex<Connection>`, CORS fairing personalizado y rutas stub compilables para `get_customers`, `create`, `update`, `delete` y `get_customer`.
+* **[2026-05-22] - Rama rustapi-#5:** Se implementó el endpoint `GET /customers` con paginación (`page`, `per_page`), filtrado dinámico por nombre (`name_filter` con LIKE), ordenamiento (`order_by`, `order_direction`) y construcción dinámica de query SQL con parámetros seguros (`Vec<Box<dyn ToSql>>`). Se añadió whitelist de columnas para prevenir SQL injection en ORDER BY. Se importó `ToSql` de rusqlite y se montó la nueva ruta junto a `get_customer` en el servidor Rocket.
+* **[2026-05-22] - Rama rustapi-#6:** Se inicializó shadcn/ui v4.8. Generados: `components.json`, `components/ui/button.tsx`, `lib/utils.ts`, directorio `hooks/`. Creado `.env` con `NEXT_PUBLIC_API_URL=http://127.0.0.1:8001`. Creado `lib/types.ts` con interfaces `Customer` y `QueryParams`. Creado `lib/api.ts` con directiva `"use server"` e implementación de `get_customers` (URLSearchParams dinamico via Object.entries), `get_customer`, `create_customer`, `update_customer` y `delete_customer`.
+* **[2026-05-22] - Rama rustapi-#7:** Se implementó `components/customer-form.tsx` reutilizable con estado interno tipado y soporte para modo alta/edición (`initialData`). Se crearon rutas `app/customer/add/page.tsx`, `app/customer/[id]/page.tsx` y `app/customer/[id]/edit/page.tsx`. En detalle y edición se obtuvo `params.id`, carga de datos con estado (`setCustomer`) y estado de carga/error. Se integraron acciones `Editar` y `Eliminar`. Se ajustó compatibilidad de frontend para Next 13 (remoción de `use server` en `lib/api.ts`, ajuste de `layout.tsx` y `globals.css`).
