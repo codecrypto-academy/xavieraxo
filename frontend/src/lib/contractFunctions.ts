@@ -118,6 +118,89 @@ export const getTransfer = async (transferId: number) => {
   };
 };
 
+// Enumeradores y listados
+export const getRegisteredUsersCount = async () => {
+  const provider = getProvider();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
+  const count = await contract.getRegisteredUsersCount();
+  return Number(count);
+};
+
+export const getAllUsers = async () => {
+  const provider = getProvider();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
+  const count = Number(await contract.getRegisteredUsersCount());
+
+  const users = [];
+  for (let i = 0; i < count; i++) {
+    const address = await contract.registeredUsers(i);
+    const user = await contract.getUser(address);
+    users.push({
+      userAddress: user.userAddress,
+      role: Number(user.role),
+      status: Number(user.status),
+      name: user.name,
+      registrationTime: Number(user.registrationTime),
+    });
+  }
+  return users;
+};
+
+export const getTokenCounter = async () => {
+  const provider = getProvider();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
+  return Number(await contract.tokenCounter());
+};
+
+export const getTransferCounter = async () => {
+  const provider = getProvider();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
+  return Number(await contract.transferCounter());
+};
+
+export const getAllTokens = async () => {
+  const provider = getProvider();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
+  const count = Number(await contract.tokenCounter());
+
+  const tokens = [];
+  for (let i = 1; i <= count; i++) {
+    const token = await contract.getToken(i);
+    tokens.push({
+      tokenId: Number(token.tokenId),
+      owner: token.owner,
+      metadata: token.metadata,
+      parentTokenId: Number(token.parentTokenId),
+      isRawMaterial: token.isRawMaterial,
+      creationTime: Number(token.creationTime),
+      creator: token.creator,
+    });
+  }
+  return tokens;
+};
+
+export const getAllTransfers = async () => {
+  const provider = getProvider();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
+  const count = Number(await contract.transferCounter());
+
+  const transfers = [];
+  for (let i = 1; i <= count; i++) {
+    const transfer = await contract.getTransfer(i);
+    transfers.push({
+      transferId: Number(transfer.transferId),
+      tokenId: Number(transfer.tokenId),
+      from: transfer.from,
+      to: transfer.to,
+      amount: Number(transfer.amount),
+      status: Number(transfer.status),
+      timestamp: Number(transfer.timestamp),
+      metadata: transfer.metadata,
+    });
+  }
+  return transfers;
+};
+
 // Eventos (se pueden usar con ethers para escuchar eventos)
 export const listenToEvents = (eventName: string, callback: (event: any) => void) => {
   const provider = getProvider();

@@ -25,16 +25,28 @@ export const SUPPLY_CHAIN_TRACKER_ABI = [
   "function rejectTransfer(uint256 _transferId) external",
   "function getTransfer(uint256 _transferId) external view returns (tuple(uint256 transferId, uint256 tokenId, address from, address to, uint256 amount, uint8 status, uint256 timestamp, string metadata))",
   
+  // Enumeradores (para listar)
+  "function registeredUsers(uint256 _index) external view returns (address)",
+  "function tokenCounter() external view returns (uint256)",
+  "function transferCounter() external view returns (uint256)",
+  "function getRegisteredUsersCount() external view returns (uint256)",
+
+  // Admin / Pausa
+  "function admin() external view returns (address)",
+  "function pause() external",
+  "function unpause() external",
+  "function paused() external view returns (bool)",
+  
   // Events
   "event UserRegistered(address indexed user, uint8 role, string name)",
   "event UserStatusChanged(address indexed user, uint8 oldStatus, uint8 newStatus)",
   "event TokenCreated(uint256 indexed tokenId, address indexed creator, bool isRawMaterial, uint256 parentTokenId)",
-  "event TransferCreated(uint256 indexed transferId, uint256 indexed tokenId, address indexed from, address indexed to)",
+  "event TokenMetadataUpdated(uint256 indexed tokenId, string newMetadata)",
+  "event TransferCreated(uint256 indexed transferId, uint256 indexed tokenId, address indexed from, address to, uint256 amount)",
   "event TransferStatusChanged(uint256 indexed transferId, uint8 newStatus)",
-  
-  // Admin
-  "function admin() external view returns (address)",
-  "function getRegisteredUsersCount() external view returns (uint256)",
+  "event BalanceUpdated(address indexed user, uint256 indexed tokenId, uint256 newBalance)",
+  "event ContractPaused(address indexed account)",
+  "event ContractUnpaused(address indexed account)",
 ] as const;
 
 // Enums (para uso en TypeScript)
