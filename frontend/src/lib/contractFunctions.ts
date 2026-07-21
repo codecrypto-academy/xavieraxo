@@ -201,6 +201,32 @@ export const getAllTransfers = async () => {
   return transfers;
 };
 
+// Tokens con balance de un usuario (recorre todos los tokens y filtra por balance > 0)
+export const getUserTokens = async (userAddress: string) => {
+  const provider = getProvider();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
+  const count = Number(await contract.tokenCounter());
+
+  const result = [];
+  for (let i = 1; i <= count; i++) {
+    const balance = Number(await contract.getBalance(userAddress, i));
+    if (balance > 0) {
+      const token = await contract.getToken(i);
+      result.push({
+        tokenId: Number(token.tokenId),
+        owner: token.owner,
+        metadata: token.metadata,
+        parentTokenId: Number(token.parentTokenId),
+        isRawMaterial: token.isRawMaterial,
+        creationTime: Number(token.creationTime),
+        creator: token.creator,
+        balance,
+      });
+    }
+  }
+  return result;
+};
+
 // Eventos (se pueden usar con ethers para escuchar eventos)
 export const listenToEvents = (eventName: string, callback: (event: any) => void) => {
   const provider = getProvider();

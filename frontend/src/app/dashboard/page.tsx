@@ -1,9 +1,9 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useWeb3 } from '@/context/Web3Context';
-import { getUser } from '@/lib/contractFunctions';
-import { ROLE_NAMES, UserRole } from '@/lib/contracts';
+import { getUser, getUserTokens, getAllTransfers } from '@/lib/contractFunctions';
+import { ROLE_NAMES, UserRole, TransferStatus } from '@/lib/contracts';
 import Link from 'next/link';
 
 export default function DashboardPage() {
@@ -11,25 +11,51 @@ export default function DashboardPage() {
   const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [userName, setUserName] = useState('');
   const [loading, setLoading] = useState(true);
+  const [tokenCount, setTokenCount] = useState<number | null>(null);
+  const [pendingCount, setPendingCount] = useState<number | null>(null);
+  const [completedCount, setCompletedCount] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (account) {
-      loadUserData();
-    }
-  }, [account]);
-
-  const loadUserData = async () => {
+  const loadUserData = useCallback(async () => {
     if (!account) return;
     try {
       const user = await getUser(account);
       setUserRole(user.role as UserRole);
       setUserName(user.name);
+
+      try {
+        const [tokens, transfers] = await Promise.all([
+          getUserTokens(account),
+          getAllTransfers(),
+        ]);
+        const mine = account.toLowerCase();
+        setTokenCount(tokens.length);
+        setPendingCount(
+          transfers.filter(
+            (t) => t.to.toLowerCase() === mine && t.status === TransferStatus.Pending
+          ).length
+        );
+        setCompletedCount(
+          transfers.filter(
+            (t) =>
+              (t.from.toLowerCase() === mine || t.to.toLowerCase() === mine) &&
+              t.status === TransferStatus.Accepted
+          ).length
+        );
+      } catch (metricsErr) {
+        console.error('Error loading metrics:', metricsErr);
+      }
     } catch (error) {
       console.error('Error loading user data:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [account]);
+
+  useEffect(() => {
+    if (account) {
+      loadUserData();
+    }
+  }, [account, loadUserData]);
 
   if (loading) {
     return (
@@ -73,7 +99,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-2 text-gray-800">Mis Tokens</h3>
-            <p className="text-3xl font-bold text-blue-600">-</p>
+            <p className="text-3xl font-bold text-blue-600">{tokenCount ?? '-'}</p>
             <Link href="/tokens" className="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block">
               Ver detalles →
             </Link>
@@ -81,7 +107,7 @@ export default function DashboardPage() {
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-2 text-gray-800">Transferencias Pendientes</h3>
-            <p className="text-3xl font-bold text-yellow-600">-</p>
+            <p className="text-3xl font-bold text-yellow-600">{pendingCount ?? '-'}</p>
             <Link href="/transfers" className="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block">
               Ver detalles →
             </Link>
@@ -89,7 +115,7 @@ export default function DashboardPage() {
 
           <div className="bg-white rounded-lg shadow-md p-6">
             <h3 className="text-lg font-semibold mb-2 text-gray-800">Transferencias Realizadas</h3>
-            <p className="text-3xl font-bold text-green-600">-</p>
+            <p className="text-3xl font-bold text-green-600">{completedCount ?? '-'}</p>
           </div>
         </div>
 
