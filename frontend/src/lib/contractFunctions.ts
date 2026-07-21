@@ -37,6 +37,13 @@ export const rejectUser = async (userAddress: string) => {
   return tx.hash;
 };
 
+export const cancelUser = async (userAddress: string) => {
+  const contract = await getContract();
+  const tx = await contract.cancelUser(userAddress);
+  await tx.wait();
+  return tx.hash;
+};
+
 export const getUser = async (userAddress: string) => {
   const provider = getProvider();
   const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
@@ -54,6 +61,13 @@ export const getUser = async (userAddress: string) => {
 export const createToken = async (metadata: string, parentTokenId: number, initialSupply: number) => {
   const contract = await getContract();
   const tx = await contract.createToken(metadata, parentTokenId, initialSupply);
+  await tx.wait();
+  return tx.hash;
+};
+
+export const updateTokenMetadata = async (tokenId: number, newMetadata: string) => {
+  const contract = await getContract();
+  const tx = await contract.updateTokenMetadata(tokenId, newMetadata);
   await tx.wait();
   return tx.hash;
 };
@@ -225,6 +239,27 @@ export const getUserTokens = async (userAddress: string) => {
     }
   }
   return result;
+};
+
+// Pausa de emergencia (solo admin)
+export const isPaused = async () => {
+  const provider = getProvider();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
+  return Boolean(await contract.paused());
+};
+
+export const pauseContract = async () => {
+  const contract = await getContract();
+  const tx = await contract.pause();
+  await tx.wait();
+  return tx.hash;
+};
+
+export const unpauseContract = async () => {
+  const contract = await getContract();
+  const tx = await contract.unpause();
+  await tx.wait();
+  return tx.hash;
 };
 
 // Eventos (se pueden usar con ethers para escuchar eventos)
