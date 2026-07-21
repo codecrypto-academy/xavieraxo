@@ -1,13 +1,32 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useWeb3 } from '@/context/Web3Context';
-import { createTransfer, acceptTransfer, rejectTransfer } from '@/lib/contractFunctions';
+import {
+  createTransfer,
+  acceptTransfer,
+  rejectTransfer,
+  getAllTransfers,
+} from '@/lib/contractFunctions';
+import { TransferStatus, TRANSFER_STATUS_NAMES } from '@/lib/contracts';
 import Link from 'next/link';
+
+interface TransferData {
+  transferId: number;
+  tokenId: number;
+  from: string;
+  to: string;
+  amount: number;
+  status: number;
+  timestamp: number;
+  metadata: string;
+}
 
 export default function TransfersPage() {
   const { account } = useWeb3();
   const [loading, setLoading] = useState(false);
+  const [loadingList, setLoadingList] = useState(false);
+  const [actionId, setActionId] = useState<number | null>(null);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
@@ -15,6 +34,26 @@ export default function TransfersPage() {
   const [to, setTo] = useState('');
   const [amount, setAmount] = useState('');
   const [metadata, setMetadata] = useState('');
+  const [transfers, setTransfers] = useState<TransferData[]>([]);
+
+  const loadTransfers = useCallback(async () => {
+    setLoadingList(true);
+    try {
+      const all = await getAllTransfers();
+      setTransfers(all);
+    } catch (err) {
+      console.error('Error loading transfers:', err);
+      setError('No se pudieron cargar las transferencias');
+    } finally {
+      setLoadingList(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (account) {
+      loadTransfers();
+    }
+  }, [account, loadTransfers]);
 
   const handleCreateTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +64,7 @@ export default function TransfersPage() {
     try {
       const tokenIdNum = parseInt(tokenId);
       const amountNum = parseInt(amount);
-      
+
       if (amountNum <= 0) {
         throw new Error('La cantidad debe ser mayor a 0');
       }
@@ -37,6 +76,7 @@ export default function TransfersPage() {
       setTo('');
       setAmount('');
       setMetadata('');
+      await loadTransfers();
     } catch (err: any) {
       setError(err.message || 'Error al crear transferencia');
     } finally {
@@ -45,30 +85,57 @@ export default function TransfersPage() {
   };
 
   const handleAcceptTransfer = async (transferId: number) => {
-    setLoading(true);
+    setActionId(transferId);
     setError('');
+    setSuccess('');
     try {
       await acceptTransfer(transferId);
       setSuccess('Transferencia aceptada');
+      await loadTransfers();
     } catch (err: any) {
       setError(err.message || 'Error al aceptar transferencia');
     } finally {
-      setLoading(false);
+      setActionId(null);
     }
   };
 
   const handleRejectTransfer = async (transferId: number) => {
-    setLoading(true);
+    setActionId(transferId);
     setError('');
+    setSuccess('');
     try {
       await rejectTransfer(transferId);
       setSuccess('Transferencia rechazada');
+      await loadTransfers();
     } catch (err: any) {
       setError(err.message || 'Error al rechazar transferencia');
     } finally {
-      setLoading(false);
+      setActionId(null);
     }
   };
+
+  const statusBadge = (status: number) => {
+    const styles: Record<number, string> = {
+      [TransferStatus.Pending]: 'bg-yellow-100 text-yellow-800',
+      [TransferStatus.Accepted]: 'bg-green-100 text-green-800',
+      [TransferStatus.Rejected]: 'bg-red-100 text-red-800',
+    };
+    return (
+      <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles[status] || 'bg-gray-100 text-gray-800'}`}>
+        {TRANSFER_STATUS_NAMES[status as TransferStatus]}
+      </span>
+    );
+  };
+
+  const short = (addr: string) => `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+  const isMine = (addr: string) => account?.toLowerCase() === addr.toLowerCase();
+
+  const incomingPending = transfers.filter(
+    (t) => isMine(t.to) && t.status === TransferStatus.Pending
+  );
+  const history = transfers.filter(
+    (t) => isMine(t.to) || isMine(t.from)
+  );
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -92,12 +159,21 @@ export default function TransfersPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-800">Transferencias</h1>
-          <button
-            onClick={() => setShowCreateForm(!showCreateForm)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
-          >
-            {showCreateForm ? 'Cancelar' : 'Nueva Transferencia'}
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={loadTransfers}
+              disabled={loadingList}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg"
+            >
+              {loadingList ? 'Actualizando...' : 'Actualizar'}
+            </button>
+            <button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+            >
+              {showCreateForm ? 'Cancelar' : 'Nueva Transferencia'}
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -183,12 +259,97 @@ export default function TransfersPage() {
           </div>
         )}
 
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Transferencias Recibidas Pendientes ({incomingPending.length})
+          </h2>
+
+          {loadingList ? (
+            <p className="text-gray-600">Cargando transferencias...</p>
+          ) : incomingPending.length === 0 ? (
+            <p className="text-gray-600">No tienes transferencias pendientes por aceptar.</p>
+          ) : (
+            <div className="space-y-3">
+              {incomingPending.map((t) => (
+                <div
+                  key={t.transferId}
+                  className="flex flex-col md:flex-row md:items-center md:justify-between border border-gray-200 rounded-lg p-4 gap-3"
+                >
+                  <div>
+                    <p className="font-semibold text-gray-800">
+                      Transferencia #{t.transferId} · Token #{t.tokenId}
+                    </p>
+                    <p className="text-sm text-gray-600">Cantidad: {t.amount}</p>
+                    <p className="text-sm text-gray-500 font-mono">De: {short(t.from)}</p>
+                    {t.metadata && (
+                      <p className="text-sm text-gray-500">Metadata: {t.metadata}</p>
+                    )}
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <button
+                      onClick={() => handleAcceptTransfer(t.transferId)}
+                      disabled={actionId === t.transferId}
+                      className="bg-green-600 hover:bg-green-700 disabled:bg-green-400 text-white font-semibold py-2 px-4 rounded-lg text-sm"
+                    >
+                      {actionId === t.transferId ? 'Procesando...' : 'Aceptar'}
+                    </button>
+                    <button
+                      onClick={() => handleRejectTransfer(t.transferId)}
+                      disabled={actionId === t.transferId}
+                      className="bg-red-600 hover:bg-red-700 disabled:bg-red-400 text-white font-semibold py-2 px-4 rounded-lg text-sm"
+                    >
+                      Rechazar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Transferencias Pendientes</h2>
-          <p className="text-gray-600">Lista de transferencias próximamente...</p>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Mi Historial de Transferencias ({history.length})
+          </h2>
+
+          {loadingList ? (
+            <p className="text-gray-600">Cargando transferencias...</p>
+          ) : history.length === 0 ? (
+            <p className="text-gray-600">Aún no tienes transferencias registradas.</p>
+          ) : (
+            <div className="overflow-x-auto">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead>
+                  <tr className="text-left text-xs font-medium text-gray-500 uppercase">
+                    <th className="px-4 py-2">#</th>
+                    <th className="px-4 py-2">Token</th>
+                    <th className="px-4 py-2">De</th>
+                    <th className="px-4 py-2">Para</th>
+                    <th className="px-4 py-2">Cantidad</th>
+                    <th className="px-4 py-2">Estado</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100">
+                  {history.map((t) => (
+                    <tr key={t.transferId}>
+                      <td className="px-4 py-3 text-sm text-gray-800">{t.transferId}</td>
+                      <td className="px-4 py-3 text-sm text-gray-600">#{t.tokenId}</td>
+                      <td className="px-4 py-3 text-sm text-gray-500 font-mono">
+                        {isMine(t.from) ? 'Yo' : short(t.from)}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-500 font-mono">
+                        {isMine(t.to) ? 'Yo' : short(t.to)}
+                      </td>
+                      <td className="px-4 py-3 text-sm text-gray-600">{t.amount}</td>
+                      <td className="px-4 py-3 text-sm">{statusBadge(t.status)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
         </div>
       </main>
     </div>
   );
 }
-
