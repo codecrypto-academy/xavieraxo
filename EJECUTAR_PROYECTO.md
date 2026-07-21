@@ -4,12 +4,12 @@
 
 Antes de ejecutar el proyecto, asegúrate de tener instalado y configurado:
 
-- ✅ Foundry (forge, anvil) - [Ver guía de instalación](INSTALACION.md)
+- ✅ Foundry (forge, anvil) - [Guía oficial de instalación](https://book.getfoundry.sh/getting-started/installation)
 - ✅ Node.js y npm
 - ✅ Dependencias del frontend instaladas (`npm install` en la carpeta `frontend`)
 - ✅ MetaMask instalado en tu navegador
 
-**Nota:** Si no tienes Foundry instalado, crea un archivo `INSTALACION.md` con los pasos de instalación y configuración inicial.
+**Nota:** Si no tienes Foundry instalado, sigue la [guía oficial](https://book.getfoundry.sh/getting-started/installation) (`curl -L https://foundry.paradigm.xyz | bash` y luego `foundryup`).
 
 ---
 

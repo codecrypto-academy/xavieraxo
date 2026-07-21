@@ -1,19 +1,24 @@
-# Supply Chain Tracker
+# Plataforma de Trazabilidad Logística Basada en Blockchain
 
-Sistema de trazabilidad de cadena de suministro basado en blockchain. Los Smart Contracts están en Solidity (Foundry) y la interfaz web descentralizada (DApp) en Next.js.
+MVP de trazabilidad logística para monitorizar productos, envíos y mercancías a lo largo de toda la cadena de distribución, desde su origen hasta el destino final, garantizando transparencia y verificabilidad on-chain.
+
+Los Smart Contracts están en Solidity (Foundry) y la interfaz web descentralizada (DApp) en Next.js.
+
+> **Categoría del proyecto:** Plataforma de Trazabilidad Logística para Envíos y Cadena de Suministro (blockchain EVM).
 
 ## Descripción
 
-Permite rastrear productos desde la materia prima hasta el consumidor final, usando blockchain para garantizar transparencia, seguridad e inmutabilidad de los datos.
+El sistema modela la cadena de suministro como una secuencia de actores con roles definidos. Cada producto o mercancía se representa como un token con metadata (JSON), y cada movimiento entre actores queda registrado como una transferencia verificable en la blockchain. Así se puede rastrear el recorrido completo de un producto y auditar cada paso.
 
 ### Características
 
 - Gestión de roles: Productor, Factoría, Distribuidor, Consumidor y Administrador
 - Registro y aprobación de usuarios por el administrador
-- Tokens que representan materias primas y productos terminados
-- Trazabilidad por parentesco entre tokens
+- Tokens que representan materias primas, productos o mercancías en tránsito
+- Trazabilidad por parentesco entre tokens (origen → destino)
 - Transferencias controladas por rol con aceptación del receptor
-- Eventos en blockchain para auditoría
+- Eventos en blockchain para auditoría y verificabilidad
+- Panel de administración y listados de tokens y transferencias en la DApp
 
 ## Estructura del proyecto
 
