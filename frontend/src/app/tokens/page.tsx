@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useWeb3 } from '@/context/Web3Context';
-import { createToken, getUserTokens } from '@/lib/contractFunctions';
+import { createToken, getUserTokens, updateTokenMetadata } from '@/lib/contractFunctions';
 import Link from 'next/link';
 
 interface TokenData {
@@ -27,6 +27,9 @@ export default function TokensPage() {
   const [parentTokenId, setParentTokenId] = useState('');
   const [initialSupply, setInitialSupply] = useState('');
   const [tokens, setTokens] = useState<TokenData[]>([]);
+  const [editingTokenId, setEditingTokenId] = useState<number | null>(null);
+  const [editMetadata, setEditMetadata] = useState('');
+  const [savingEdit, setSavingEdit] = useState(false);
 
   const loadTokens = useCallback(async () => {
     if (!account) return;
@@ -75,6 +78,37 @@ export default function TokensPage() {
       setLoading(false);
     }
   };
+
+  const startEdit = (tokenId: number, currentMetadata: string) => {
+    setEditingTokenId(tokenId);
+    setEditMetadata(currentMetadata);
+    setError('');
+    setSuccess('');
+  };
+
+  const cancelEdit = () => {
+    setEditingTokenId(null);
+    setEditMetadata('');
+  };
+
+  const handleUpdateMetadata = async (tokenId: number) => {
+    setSavingEdit(true);
+    setError('');
+    setSuccess('');
+    try {
+      await updateTokenMetadata(tokenId, editMetadata);
+      setSuccess('Metadata actualizada exitosamente');
+      setEditingTokenId(null);
+      setEditMetadata('');
+      await loadTokens();
+    } catch (err: any) {
+      setError(err.message || 'Error al actualizar metadata');
+    } finally {
+      setSavingEdit(false);
+    }
+  };
+
+  const isOwner = (owner: string) => account?.toLowerCase() === owner.toLowerCase();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -210,10 +244,48 @@ export default function TokensPage() {
                       {token.isRawMaterial ? 'Materia Prima' : 'Producto'}
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 break-words mb-2">{token.metadata}</p>
+
+                  {editingTokenId === token.tokenId ? (
+                    <div className="space-y-2 mb-2">
+                      <textarea
+                        value={editMetadata}
+                        onChange={(e) => setEditMetadata(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"
+                        rows={3}
+                      />
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => handleUpdateMetadata(token.tokenId)}
+                          disabled={savingEdit}
+                          className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-medium py-1.5 px-3 rounded-lg text-xs"
+                        >
+                          {savingEdit ? 'Guardando...' : 'Guardar'}
+                        </button>
+                        <button
+                          onClick={cancelEdit}
+                          disabled={savingEdit}
+                          className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-medium py-1.5 px-3 rounded-lg text-xs"
+                        >
+                          Cancelar
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-gray-600 break-words mb-2">{token.metadata}</p>
+                  )}
+
                   <p className="text-sm text-gray-800 font-medium">Balance: {token.balance}</p>
                   {token.parentTokenId > 0 && (
                     <p className="text-xs text-gray-500 mt-1">Deriva del token #{token.parentTokenId}</p>
+                  )}
+
+                  {isOwner(token.owner) && editingTokenId !== token.tokenId && (
+                    <button
+                      onClick={() => startEdit(token.tokenId, token.metadata)}
+                      className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                    >
+                      Editar metadata
+                    </button>
                   )}
                 </div>
               ))}

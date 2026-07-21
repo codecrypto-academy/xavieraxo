@@ -2,7 +2,16 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { useWeb3 } from '@/context/Web3Context';
-import { getUser, approveUser, rejectUser, getAllUsers } from '@/lib/contractFunctions';
+import {
+  getUser,
+  approveUser,
+  rejectUser,
+  cancelUser,
+  getAllUsers,
+  isPaused,
+  pauseContract,
+  unpauseContract,
+} from '@/lib/contractFunctions';
 import { UserRole, UserStatus, STATUS_NAMES, ROLE_NAMES } from '@/lib/contracts';
 import Link from 'next/link';
 
@@ -21,8 +30,18 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
   const [loadingUsers, setLoadingUsers] = useState(false);
   const [actionAddress, setActionAddress] = useState<string | null>(null);
+  const [paused, setPaused] = useState<boolean | null>(null);
+  const [pausing, setPausing] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const loadPaused = useCallback(async () => {
+    try {
+      setPaused(await isPaused());
+    } catch (err) {
+      console.error('Error reading paused state:', err);
+    }
+  }, []);
 
   const loadUsers = useCallback(async () => {
     setLoadingUsers(true);
@@ -43,14 +62,14 @@ export default function AdminPage() {
       const user = await getUser(account);
       setUserRole(user.role as UserRole);
       if (user.role === UserRole.Admin) {
-        await loadUsers();
+        await Promise.all([loadUsers(), loadPaused()]);
       }
     } catch (error) {
       console.error('Error checking admin access:', error);
     } finally {
       setLoading(false);
     }
-  }, [account, loadUsers]);
+  }, [account, loadUsers, loadPaused]);
 
   useEffect(() => {
     if (account) {
@@ -85,6 +104,41 @@ export default function AdminPage() {
       setError(err.message || 'Error al rechazar usuario');
     } finally {
       setActionAddress(null);
+    }
+  };
+
+  const handleCancel = async (userAddress: string) => {
+    setActionAddress(userAddress);
+    setError('');
+    setSuccess('');
+    try {
+      await cancelUser(userAddress);
+      setSuccess('Usuario cancelado exitosamente');
+      await loadUsers();
+    } catch (err: any) {
+      setError(err.message || 'Error al cancelar usuario');
+    } finally {
+      setActionAddress(null);
+    }
+  };
+
+  const handleTogglePause = async () => {
+    setPausing(true);
+    setError('');
+    setSuccess('');
+    try {
+      if (paused) {
+        await unpauseContract();
+        setSuccess('Contrato reanudado');
+      } else {
+        await pauseContract();
+        setSuccess('Contrato pausado');
+      }
+      await loadPaused();
+    } catch (err: any) {
+      setError(err.message || 'Error al cambiar el estado de pausa');
+    } finally {
+      setPausing(false);
     }
   };
 
@@ -182,6 +236,36 @@ export default function AdminPage() {
         )}
 
         <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold text-gray-800">Estado del Contrato</h2>
+              <p className="text-sm text-gray-600 mt-1">
+                Estado actual:{' '}
+                {paused === null ? (
+                  <span className="text-gray-500">consultando...</span>
+                ) : paused ? (
+                  <span className="font-semibold text-red-600">Pausado</span>
+                ) : (
+                  <span className="font-semibold text-green-600">Activo</span>
+                )}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                Al pausar, se bloquean registros, creación de tokens y transferencias.
+              </p>
+            </div>
+            <button
+              onClick={handleTogglePause}
+              disabled={pausing || paused === null}
+              className={`font-semibold py-2 px-4 rounded-lg text-white disabled:opacity-70 ${
+                paused ? 'bg-green-600 hover:bg-green-700' : 'bg-red-600 hover:bg-red-700'
+              }`}
+            >
+              {pausing ? 'Procesando...' : paused ? 'Reanudar contrato' : 'Pausar contrato'}
+            </button>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
           <h2 className="text-xl font-semibold mb-4 text-gray-800">
             Usuarios Pendientes de Aprobación ({pendingUsers.length})
           </h2>
@@ -242,17 +326,36 @@ export default function AdminPage() {
                     <th className="px-4 py-2">Dirección</th>
                     <th className="px-4 py-2">Rol</th>
                     <th className="px-4 py-2">Estado</th>
+                    <th className="px-4 py-2">Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
-                  {users.map((user) => (
-                    <tr key={user.userAddress}>
-                      <td className="px-4 py-3 text-sm text-gray-800">{user.name}</td>
-                      <td className="px-4 py-3 text-sm text-gray-500 font-mono">{user.userAddress}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{ROLE_NAMES[user.role as UserRole]}</td>
-                      <td className="px-4 py-3 text-sm">{statusBadge(user.status)}</td>
-                    </tr>
-                  ))}
+                  {users.map((user) => {
+                    const canCancel =
+                      user.role !== UserRole.Admin &&
+                      (user.status === UserStatus.Approved || user.status === UserStatus.Pending);
+                    return (
+                      <tr key={user.userAddress}>
+                        <td className="px-4 py-3 text-sm text-gray-800">{user.name}</td>
+                        <td className="px-4 py-3 text-sm text-gray-500 font-mono">{user.userAddress}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{ROLE_NAMES[user.role as UserRole]}</td>
+                        <td className="px-4 py-3 text-sm">{statusBadge(user.status)}</td>
+                        <td className="px-4 py-3 text-sm">
+                          {canCancel ? (
+                            <button
+                              onClick={() => handleCancel(user.userAddress)}
+                              disabled={actionAddress === user.userAddress}
+                              className="bg-gray-700 hover:bg-gray-800 disabled:bg-gray-400 text-white font-medium py-1.5 px-3 rounded-lg text-xs"
+                            >
+                              {actionAddress === user.userAddress ? '...' : 'Cancelar'}
+                            </button>
+                          ) : (
+                            <span className="text-gray-400 text-xs">—</span>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
