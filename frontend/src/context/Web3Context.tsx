@@ -2,11 +2,18 @@
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 
+// Red local de Anvil
+const EXPECTED_CHAIN_ID = 31337;
+const EXPECTED_CHAIN_ID_HEX = '0x7a69';
+
 interface Web3ContextType {
   isConnected: boolean;
   account: string | null;
+  chainId: number | null;
+  isCorrectNetwork: boolean;
   connect: () => Promise<void>;
   disconnect: () => void;
+  switchNetwork: () => Promise<void>;
 }
 
 const Web3Context = createContext<Web3ContextType | undefined>(undefined);
@@ -26,6 +33,18 @@ interface Web3ProviderProps {
 export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false);
   const [account, setAccount] = useState<string | null>(null);
+  const [chainId, setChainId] = useState<number | null>(null);
+
+  const loadChainId = async () => {
+    if (typeof window !== 'undefined' && (window as any).ethereum) {
+      try {
+        const hexChainId = await (window as any).ethereum.request({ method: 'eth_chainId' });
+        setChainId(parseInt(hexChainId, 16));
+      } catch (error) {
+        console.error('Error reading chainId:', error);
+      }
+    }
+  };
 
   useEffect(() => {
     // Cargar estado desde localStorage
@@ -36,11 +55,13 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
       checkConnection();
     }
 
-    // Detectar cambios de cuenta
+    loadChainId();
+
+    // Detectar cambios de cuenta y de red
     if (typeof window !== 'undefined' && (window as any).ethereum) {
       (window as any).ethereum.on('accountsChanged', handleAccountsChanged);
-      (window as any).ethereum.on('chainChanged', () => {
-        window.location.reload();
+      (window as any).ethereum.on('chainChanged', (hexChainId: string) => {
+        setChainId(parseInt(hexChainId, 16));
       });
     }
 
@@ -89,6 +110,7 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
           setIsConnected(true);
           localStorage.setItem('web3_account', accounts[0]);
         }
+        await loadChainId();
       } catch (error) {
         console.error('Error connecting:', error);
         throw error;
@@ -98,16 +120,56 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
     }
   };
 
+  const switchNetwork = async () => {
+    if (typeof window === 'undefined' || !(window as any).ethereum) {
+      throw new Error('MetaMask no está instalado');
+    }
+    try {
+      await (window as any).ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: EXPECTED_CHAIN_ID_HEX }],
+      });
+    } catch (switchError: any) {
+      // 4902 = la red no está agregada en MetaMask; intentamos agregarla
+      if (switchError?.code === 4902) {
+        await (window as any).ethereum.request({
+          method: 'wallet_addEthereumChain',
+          params: [
+            {
+              chainId: EXPECTED_CHAIN_ID_HEX,
+              chainName: 'Localhost 8545',
+              nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+              rpcUrls: ['http://127.0.0.1:8545'],
+            },
+          ],
+        });
+      } else {
+        throw switchError;
+      }
+    }
+  };
+
   const disconnect = () => {
     setIsConnected(false);
     setAccount(null);
     localStorage.removeItem('web3_account');
   };
 
+  const isCorrectNetwork = chainId === EXPECTED_CHAIN_ID;
+
   return (
-    <Web3Context.Provider value={{ isConnected, account, connect, disconnect }}>
+    <Web3Context.Provider
+      value={{
+        isConnected,
+        account,
+        chainId,
+        isCorrectNetwork,
+        connect,
+        disconnect,
+        switchNetwork,
+      }}
+    >
       {children}
     </Web3Context.Provider>
   );
 };
-
