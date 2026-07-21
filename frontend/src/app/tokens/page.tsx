@@ -1,19 +1,52 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useWeb3 } from '@/context/Web3Context';
-import { createToken, getToken } from '@/lib/contractFunctions';
+import { createToken, getUserTokens } from '@/lib/contractFunctions';
 import Link from 'next/link';
+
+interface TokenData {
+  tokenId: number;
+  owner: string;
+  metadata: string;
+  parentTokenId: number;
+  isRawMaterial: boolean;
+  creationTime: number;
+  creator: string;
+  balance: number;
+}
 
 export default function TokensPage() {
   const { account } = useWeb3();
   const [loading, setLoading] = useState(false);
+  const [loadingList, setLoadingList] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [metadata, setMetadata] = useState('');
   const [parentTokenId, setParentTokenId] = useState('');
   const [initialSupply, setInitialSupply] = useState('');
+  const [tokens, setTokens] = useState<TokenData[]>([]);
+
+  const loadTokens = useCallback(async () => {
+    if (!account) return;
+    setLoadingList(true);
+    try {
+      const userTokens = await getUserTokens(account);
+      setTokens(userTokens);
+    } catch (err) {
+      console.error('Error loading tokens:', err);
+      setError('No se pudieron cargar los tokens');
+    } finally {
+      setLoadingList(false);
+    }
+  }, [account]);
+
+  useEffect(() => {
+    if (account) {
+      loadTokens();
+    }
+  }, [account, loadTokens]);
 
   const handleCreateToken = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +57,7 @@ export default function TokensPage() {
     try {
       const parentId = parentTokenId ? parseInt(parentTokenId) : 0;
       const supply = parseInt(initialSupply);
-      
+
       if (supply <= 0) {
         throw new Error('La cantidad inicial debe ser mayor a 0');
       }
@@ -35,6 +68,7 @@ export default function TokensPage() {
       setMetadata('');
       setParentTokenId('');
       setInitialSupply('');
+      await loadTokens();
     } catch (err: any) {
       setError(err.message || 'Error al crear token');
     } finally {
@@ -64,12 +98,21 @@ export default function TokensPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8 flex justify-between items-center">
           <h1 className="text-3xl font-bold text-gray-800">Tokens</h1>
-          <button
-            onClick={() => setShowCreateForm(!showCreateForm)}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
-          >
-            {showCreateForm ? 'Cancelar' : 'Crear Token'}
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={loadTokens}
+              disabled={loadingList}
+              className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded-lg"
+            >
+              {loadingList ? 'Actualizando...' : 'Actualizar'}
+            </button>
+            <button
+              onClick={() => setShowCreateForm(!showCreateForm)}
+              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg"
+            >
+              {showCreateForm ? 'Cancelar' : 'Crear Token'}
+            </button>
+          </div>
         </div>
 
         {error && (
@@ -143,11 +186,41 @@ export default function TokensPage() {
         )}
 
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Mis Tokens</h2>
-          <p className="text-gray-600">Lista de tokens próximamente...</p>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Mis Tokens ({tokens.length})
+          </h2>
+
+          {loadingList ? (
+            <p className="text-gray-600">Cargando tokens...</p>
+          ) : tokens.length === 0 ? (
+            <p className="text-gray-600">Aún no tienes tokens con balance disponible.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {tokens.map((token) => (
+                <div key={token.tokenId} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="font-semibold text-gray-800">Token #{token.tokenId}</span>
+                    <span
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        token.isRawMaterial
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-indigo-100 text-indigo-800'
+                      }`}
+                    >
+                      {token.isRawMaterial ? 'Materia Prima' : 'Producto'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 break-words mb-2">{token.metadata}</p>
+                  <p className="text-sm text-gray-800 font-medium">Balance: {token.balance}</p>
+                  {token.parentTokenId > 0 && (
+                    <p className="text-xs text-gray-500 mt-1">Deriva del token #{token.parentTokenId}</p>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>
   );
 }
-

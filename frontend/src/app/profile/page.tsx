@@ -1,33 +1,52 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useWeb3 } from '@/context/Web3Context';
-import { getUser } from '@/lib/contractFunctions';
+import { getUser, getUserTokens } from '@/lib/contractFunctions';
 import { ROLE_NAMES, STATUS_NAMES, UserRole, UserStatus } from '@/lib/contracts';
 import Link from 'next/link';
+
+interface TokenData {
+  tokenId: number;
+  metadata: string;
+  isRawMaterial: boolean;
+  parentTokenId: number;
+  balance: number;
+}
 
 export default function ProfilePage() {
   const { account, disconnect } = useWeb3();
   const [userData, setUserData] = useState<any>(null);
+  const [tokens, setTokens] = useState<TokenData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingTokens, setLoadingTokens] = useState(false);
 
-  useEffect(() => {
-    if (account) {
-      loadUserData();
-    }
-  }, [account]);
-
-  const loadUserData = async () => {
+  const loadUserData = useCallback(async () => {
     if (!account) return;
     try {
       const user = await getUser(account);
       setUserData(user);
+      setLoadingTokens(true);
+      try {
+        const userTokens = await getUserTokens(account);
+        setTokens(userTokens);
+      } catch (tokenErr) {
+        console.error('Error loading tokens:', tokenErr);
+      } finally {
+        setLoadingTokens(false);
+      }
     } catch (error) {
       console.error('Error loading user data:', error);
     } finally {
       setLoading(false);
     }
-  };
+  }, [account]);
+
+  useEffect(() => {
+    if (account) {
+      loadUserData();
+    }
+  }, [account, loadUserData]);
 
   if (loading) {
     return (
@@ -93,8 +112,36 @@ export default function ProfilePage() {
         )}
 
         <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Mi Portafolio</h2>
-          <p className="text-gray-600">Lista de tokens próximamente...</p>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Mi Portafolio ({tokens.length})
+          </h2>
+
+          {loadingTokens ? (
+            <p className="text-gray-600">Cargando tokens...</p>
+          ) : tokens.length === 0 ? (
+            <p className="text-gray-600">Aún no tienes tokens con balance disponible.</p>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {tokens.map((token) => (
+                <div key={token.tokenId} className="border border-gray-200 rounded-lg p-4">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="font-semibold text-gray-800">Token #{token.tokenId}</span>
+                    <span
+                      className={`px-2 py-1 text-xs font-medium rounded-full ${
+                        token.isRawMaterial
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-indigo-100 text-indigo-800'
+                      }`}
+                    >
+                      {token.isRawMaterial ? 'Materia Prima' : 'Producto'}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 break-words mb-2">{token.metadata}</p>
+                  <p className="text-sm text-gray-800 font-medium">Balance: {token.balance}</p>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
 
         <div className="mt-6">
