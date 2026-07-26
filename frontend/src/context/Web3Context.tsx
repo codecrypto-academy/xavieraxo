@@ -1,16 +1,15 @@
 'use client';
 
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-
-// Red local de Anvil
-const EXPECTED_CHAIN_ID = 31337;
-const EXPECTED_CHAIN_ID_HEX = '0x7a69';
+import { EXPECTED_CHAIN_ID, EXPECTED_NETWORK } from '@/lib/networks';
 
 interface Web3ContextType {
   isConnected: boolean;
   account: string | null;
   chainId: number | null;
   isCorrectNetwork: boolean;
+  expectedChainId: number;
+  expectedNetworkName: string;
   connect: () => Promise<void>;
   disconnect: () => void;
   switchNetwork: () => Promise<void>;
@@ -47,7 +46,6 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
   };
 
   useEffect(() => {
-    // Cargar estado desde localStorage
     const savedAccount = localStorage.getItem('web3_account');
     if (savedAccount) {
       setAccount(savedAccount);
@@ -57,7 +55,6 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
 
     loadChainId();
 
-    // Detectar cambios de cuenta y de red
     if (typeof window !== 'undefined' && (window as any).ethereum) {
       (window as any).ethereum.on('accountsChanged', handleAccountsChanged);
       (window as any).ethereum.on('chainChanged', (hexChainId: string) => {
@@ -127,19 +124,19 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
     try {
       await (window as any).ethereum.request({
         method: 'wallet_switchEthereumChain',
-        params: [{ chainId: EXPECTED_CHAIN_ID_HEX }],
+        params: [{ chainId: EXPECTED_NETWORK.chainIdHex }],
       });
     } catch (switchError: any) {
-      // 4902 = la red no está agregada en MetaMask; intentamos agregarla
       if (switchError?.code === 4902) {
         await (window as any).ethereum.request({
           method: 'wallet_addEthereumChain',
           params: [
             {
-              chainId: EXPECTED_CHAIN_ID_HEX,
-              chainName: 'Localhost 8545',
-              nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
-              rpcUrls: ['http://127.0.0.1:8545'],
+              chainId: EXPECTED_NETWORK.chainIdHex,
+              chainName: EXPECTED_NETWORK.chainName,
+              nativeCurrency: EXPECTED_NETWORK.nativeCurrency,
+              rpcUrls: EXPECTED_NETWORK.rpcUrls,
+              blockExplorerUrls: EXPECTED_NETWORK.blockExplorerUrls || [],
             },
           ],
         });
@@ -164,6 +161,8 @@ export const Web3Provider: React.FC<Web3ProviderProps> = ({ children }) => {
         account,
         chainId,
         isCorrectNetwork,
+        expectedChainId: EXPECTED_CHAIN_ID,
+        expectedNetworkName: EXPECTED_NETWORK.chainName,
         connect,
         disconnect,
         switchNetwork,

@@ -9,7 +9,9 @@ via_ir = false
 
 [rpc_endpoints]
 localhost = "http://127.0.0.1:8545"
+sepolia = "${SEPOLIA_RPC_URL}"
 
 [etherscan]
 localhost = { api_url = "http://localhost:4000/api", key = "TEST" }
+sepolia = { key = "${ETHERSCAN_API_KEY}" }
 

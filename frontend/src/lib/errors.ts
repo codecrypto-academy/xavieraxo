@@ -45,7 +45,7 @@ const GENERIC_PATTERNS: Array<{ test: RegExp; message: string }> = [
   },
   {
     test: /network|chain|wrong network/i,
-    message: 'Revisa que MetaMask esté en la red Localhost 8545 (Chain ID 31337).',
+    message: 'Revisa que MetaMask esté en la red configurada (Anvil 31337 o Sepolia 11155111).',
   },
   {
     test: /insufficient funds/i,

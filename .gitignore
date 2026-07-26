@@ -15,6 +15,7 @@ SC/broadcast/
 .env.local
 .env*.local
 frontend/.env.local
+SC/.env
 
 # IDE
 .vscode/

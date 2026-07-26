@@ -18,6 +18,7 @@ Plataforma de trazabilidad logistica basada en blockchain EVM.
 - `CHECKLIST_DEMO.md`: checklist de demo (5-10 min)
 - `VERIFICACION_E2E.md`: verificacion automatizada y criterios E2E
 - `DOCUMENTO_ENTREGA.md`: documento de entrega / defensa academica
+- `DEPLOY_SEPOLIA.md`: deploy en testnet Sepolia
 - `EJECUTAR_PROYECTO.md`: guia de ejecucion
 - `CONFIGURACION_METAMASK.md`: configuracion de wallet
 - `GUIA_RAPIDA_METAMASK.md`: referencia rapida
@@ -153,14 +154,25 @@ powershell -ExecutionPolicy Bypass -File scripts/verify.ps1
 
 Detalle y resultados: `VERIFICACION_E2E.md`.
 
+### 6.6 Deploy Sepolia (testnet)
+```powershell
+$env:SEPOLIA_RPC_URL="https://..."
+$env:SEPOLIA_PRIVATE_KEY="0x..."
+powershell -ExecutionPolicy Bypass -File scripts/deploy-sepolia.ps1
+```
+
+Guia: `DEPLOY_SEPOLIA.md`.
+
 ## 7) Configuracion importante
 
 - Variable frontend:
   - `NEXT_PUBLIC_CONTRACT_ADDRESS` en `frontend/.env.local`
+  - `NEXT_PUBLIC_CHAIN_ID` (`31337` Anvil o `11155111` Sepolia)
 - Sync automatico tras deploy:
   - `node scripts/sync-contract-address.mjs`
   - o `powershell -File scripts/deploy-local.ps1` (deploy + sync)
-- Si no se define, el frontend usa una direccion local por defecto en `frontend/src/lib/contracts.ts`
+  - o `powershell -File scripts/deploy-sepolia.ps1` (Sepolia + sync)
+- Si no se define address, el frontend usa una direccion local por defecto en `frontend/src/lib/contracts.ts`
 
 ## 8) Observaciones tecnicas
 
