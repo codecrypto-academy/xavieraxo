@@ -30,8 +30,9 @@ contract SupplyChainTracker is ReentrancyGuard, Pausable {
     enum TransferStatus {
         Pending,        // Pendiente
         Accepted,       // Aceptada
-        Rejected,       // Rechazada
-        Expired         // Expirada por timeout
+        Rejected,       // Rechazada por el receptor
+        Expired,        // Expirada por timeout
+        Cancelled       // Cancelada por el emisor
     }
 
     // ============ STRUCTS ============
@@ -432,6 +433,32 @@ contract SupplyChainTracker is ReentrancyGuard, Pausable {
         
         emit TransferStatusChanged(_transferId, TransferStatus.Rejected);
         emit BalanceUpdated(transfer.from, transfer.tokenId, balances[transfer.from][transfer.tokenId]);
+    }
+
+    /**
+     * @dev Cancelar una transferencia pendiente (solo el emisor, antes del timeout).
+     * @param _transferId ID de la transferencia
+     */
+    function cancelTransfer(uint256 _transferId)
+        external
+        whenNotPaused
+        onlyApprovedUser
+        nonReentrant
+    {
+        Transfer storage transfer = transfers[_transferId];
+        require(transfer.transferId != 0, "Transferencia no existe");
+        require(transfer.from == msg.sender, "No eres el emisor");
+        require(transfer.status == TransferStatus.Pending, "Transferencia no pendiente");
+        require(
+            block.timestamp <= transfer.timestamp + TRANSFER_TIMEOUT,
+            "Transferencia expirada"
+        );
+
+        transfer.status = TransferStatus.Cancelled;
+        balances[msg.sender][transfer.tokenId] += transfer.amount;
+
+        emit TransferStatusChanged(_transferId, TransferStatus.Cancelled);
+        emit BalanceUpdated(msg.sender, transfer.tokenId, balances[msg.sender][transfer.tokenId]);
     }
 
     /**

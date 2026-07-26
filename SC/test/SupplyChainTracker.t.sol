@@ -339,6 +339,37 @@ contract SupplyChainTrackerTest is Test {
         tracker.expireTransfer(transferId);
     }
 
+    function test_SenderCanCancelPendingTransfer() public {
+        (uint256 transferId, uint256 tokenId) = _setupProducerFactoryWithPendingTransfer();
+
+        assertEq(tracker.getBalance(producer, tokenId), 60, "40 reservados");
+
+        vm.prank(producer);
+        tracker.cancelTransfer(transferId);
+
+        SupplyChainTracker.Transfer memory transfer = tracker.getTransfer(transferId);
+        assertEq(uint256(transfer.status), uint256(SupplyChainTracker.TransferStatus.Cancelled), "Cancelled");
+        assertEq(tracker.getBalance(producer, tokenId), 100, "Balance liberado al emisor");
+    }
+
+    function test_ReceiverCannotCancelTransfer() public {
+        (uint256 transferId,) = _setupProducerFactoryWithPendingTransfer();
+
+        vm.prank(factory);
+        vm.expectRevert("No eres el emisor");
+        tracker.cancelTransfer(transferId);
+    }
+
+    function test_CannotCancelExpiredTransfer() public {
+        (uint256 transferId,) = _setupProducerFactoryWithPendingTransfer();
+
+        vm.warp(block.timestamp + tracker.TRANSFER_TIMEOUT() + 1);
+
+        vm.prank(producer);
+        vm.expectRevert("Transferencia expirada");
+        tracker.cancelTransfer(transferId);
+    }
+
     // ============ ADMIN / PAUSE / VALIDATION TESTS ============
 
     function _approveProducer() internal {

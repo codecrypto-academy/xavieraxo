@@ -25,6 +25,7 @@ const CONTRACT_MESSAGES: Record<string, string> = {
     'Esa transferencia no es válida según los roles de la cadena de suministro.',
   'Transferencia no existe': 'La transferencia indicada no existe.',
   'No eres el receptor': 'Solo el receptor puede aceptar o rechazar esta transferencia.',
+  'No eres el emisor': 'Solo el emisor puede cancelar esta transferencia.',
   'Transferencia no pendiente': 'La transferencia ya no está pendiente.',
   'Transferencia expirada':
     'La transferencia expiró. Usa “Expirar y liberar” para devolver el balance al emisor.',

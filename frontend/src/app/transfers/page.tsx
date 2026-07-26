@@ -6,6 +6,7 @@ import {
   createTransfer,
   acceptTransfer,
   rejectTransfer,
+  cancelTransfer,
   expireTransfer,
   getAllTransfers,
   getTransferTimeout,
@@ -139,6 +140,21 @@ export default function TransfersPage() {
     }
   };
 
+  const handleCancelTransfer = async (transferId: number) => {
+    setActionId(transferId);
+    setError('');
+    setSuccess('');
+    try {
+      await cancelTransfer(transferId);
+      setSuccess('Transferencia cancelada: balance liberado');
+      await loadTransfers();
+    } catch (err: any) {
+      setError(parseContractError(err, 'Error al cancelar transferencia'));
+    } finally {
+      setActionId(null);
+    }
+  };
+
   const statusBadge = (t: TransferData) => {
     const expiredPending = isExpiredPending(t);
     const status = expiredPending ? TransferStatus.Expired : t.status;
@@ -147,6 +163,7 @@ export default function TransfersPage() {
       [TransferStatus.Accepted]: 'bg-green-100 text-green-800',
       [TransferStatus.Rejected]: 'bg-red-100 text-red-800',
       [TransferStatus.Expired]: 'bg-orange-100 text-orange-800',
+      [TransferStatus.Cancelled]: 'bg-gray-100 text-gray-800',
     };
     const label = expiredPending
       ? 'Pendiente (expirada)'
@@ -163,6 +180,9 @@ export default function TransfersPage() {
 
   const incomingPending = transfers.filter(
     (t) => isMine(t.to) && t.status === TransferStatus.Pending && !isExpiredPending(t)
+  );
+  const outgoingPending = transfers.filter(
+    (t) => isMine(t.from) && t.status === TransferStatus.Pending && !isExpiredPending(t)
   );
   const recoverableExpired = transfers.filter(
     (t) =>
@@ -340,6 +360,42 @@ export default function TransfersPage() {
                       Rechazar
                     </button>
                   </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Transferencias Enviadas Pendientes ({outgoingPending.length})
+          </h2>
+
+          {loadingList ? (
+            <p className="text-gray-600">Cargando transferencias...</p>
+          ) : outgoingPending.length === 0 ? (
+            <p className="text-gray-600">No tienes transferencias enviadas pendientes.</p>
+          ) : (
+            <div className="space-y-3">
+              {outgoingPending.map((t) => (
+                <div
+                  key={t.transferId}
+                  className="flex flex-col md:flex-row md:items-center md:justify-between border border-gray-200 rounded-lg p-4 gap-3"
+                >
+                  <div>
+                    <p className="font-semibold text-gray-800">
+                      Transferencia #{t.transferId} · Token #{t.tokenId}
+                    </p>
+                    <p className="text-sm text-gray-600">Cantidad reservada: {t.amount}</p>
+                    <p className="text-sm text-gray-500 font-mono">Para: {short(t.to)}</p>
+                  </div>
+                  <button
+                    onClick={() => handleCancelTransfer(t.transferId)}
+                    disabled={actionId === t.transferId}
+                    className="bg-gray-700 hover:bg-gray-800 disabled:bg-gray-400 text-white font-semibold py-2 px-4 rounded-lg text-sm"
+                  >
+                    {actionId === t.transferId ? 'Procesando...' : 'Cancelar envío'}
+                  </button>
                 </div>
               ))}
             </div>

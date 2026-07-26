@@ -42,7 +42,7 @@ npm run build
 #### Foundry (`forge test`)
 
 - Suite: `SupplyChainTracker.t.sol`
-- Resultado: **32 passed, 0 failed, 0 skipped** (incluye timeout, pause, cancel, metadata y validaciones)
+- Resultado: **35 passed, 0 failed, 0 skipped** (incluye timeout, cancel por emisor, pause, cancel user, metadata y validaciones)
 - Cobertura aproximada del contrato (`forge coverage`): ~96% lineas / ~71% ramas
 
 

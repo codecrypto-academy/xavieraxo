@@ -116,6 +116,13 @@ export const rejectTransfer = async (transferId: number) => {
   return tx.hash;
 };
 
+export const cancelTransfer = async (transferId: number) => {
+  const contract = await getContract();
+  const tx = await contract.cancelTransfer(transferId);
+  await tx.wait();
+  return tx.hash;
+};
+
 export const expireTransfer = async (transferId: number) => {
   const contract = await getContract();
   const tx = await contract.expireTransfer(transferId);
