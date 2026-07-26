@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useWeb3 } from '@/context/Web3Context';
+import { parseContractError } from '@/lib/errors';
 
 export default function NetworkBanner() {
   const { isConnected, chainId, isCorrectNetwork, switchNetwork } = useWeb3();
@@ -19,7 +20,7 @@ export default function NetworkBanner() {
     try {
       await switchNetwork();
     } catch (err: any) {
-      setError(err?.message || 'No se pudo cambiar de red');
+      setError(parseContractError(err, 'No se pudo cambiar de red'));
     } finally {
       setSwitching(false);
     }

@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useWeb3 } from '@/context/Web3Context';
 import { createToken, getUserTokens, updateTokenMetadata } from '@/lib/contractFunctions';
+import { parseContractError } from '@/lib/errors';
 import Link from 'next/link';
 
 interface TokenData {
@@ -73,7 +74,7 @@ export default function TokensPage() {
       setInitialSupply('');
       await loadTokens();
     } catch (err: any) {
-      setError(err.message || 'Error al crear token');
+      setError(parseContractError(err, 'Error al crear token'));
     } finally {
       setLoading(false);
     }
@@ -102,7 +103,7 @@ export default function TokensPage() {
       setEditMetadata('');
       await loadTokens();
     } catch (err: any) {
-      setError(err.message || 'Error al actualizar metadata');
+      setError(parseContractError(err, 'Error al actualizar metadata'));
     } finally {
       setSavingEdit(false);
     }

@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useWeb3 } from '@/context/Web3Context';
 import { registerUser } from '@/lib/contractFunctions';
 import { UserRole, ROLE_NAMES } from '@/lib/contracts';
+import { parseContractError } from '@/lib/errors';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -29,7 +30,7 @@ export default function RegisterPage() {
       router.push('/');
       router.refresh();
     } catch (err: any) {
-      setError(err.message || 'Error al registrar usuario');
+      setError(parseContractError(err, 'Error al registrar usuario'));
     } finally {
       setLoading(false);
     }

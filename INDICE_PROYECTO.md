@@ -89,6 +89,7 @@ Responsabilidades:
 ### 4.4 Integracion con contrato
 - `frontend/src/lib/contracts.ts`: address, ABI, enums y etiquetas
 - `frontend/src/lib/contractFunctions.ts`: funciones de lectura/escritura on-chain
+- `frontend/src/lib/errors.ts`: mensajes legibles para reverts y errores de wallet
 
 ### 4.5 Componentes UI
 - `frontend/src/components/NetworkBanner.tsx`: aviso de red incorrecta

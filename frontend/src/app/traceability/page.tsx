@@ -12,6 +12,7 @@ import {
   getTokenCounter,
 } from '@/lib/contractFunctions';
 import { TRANSFER_STATUS_NAMES, TransferStatus } from '@/lib/contracts';
+import { parseContractError } from '@/lib/errors';
 
 interface TokenInfo {
   tokenId: number;
@@ -92,7 +93,7 @@ function TraceabilityContent() {
       setLineage([]);
       setChildren([]);
       setTransfers([]);
-      setError(err.message || 'No se pudo cargar la trazabilidad');
+      setError(parseContractError(err, 'No se pudo cargar la trazabilidad'));
     } finally {
       setLoading(false);
     }

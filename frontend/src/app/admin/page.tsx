@@ -13,6 +13,7 @@ import {
   unpauseContract,
 } from '@/lib/contractFunctions';
 import { UserRole, UserStatus, STATUS_NAMES, ROLE_NAMES } from '@/lib/contracts';
+import { parseContractError } from '@/lib/errors';
 import Link from 'next/link';
 
 interface UserData {
@@ -86,7 +87,7 @@ export default function AdminPage() {
       setSuccess('Usuario aprobado exitosamente');
       await loadUsers();
     } catch (err: any) {
-      setError(err.message || 'Error al aprobar usuario');
+      setError(parseContractError(err, 'Error al aprobar usuario'));
     } finally {
       setActionAddress(null);
     }
@@ -101,7 +102,7 @@ export default function AdminPage() {
       setSuccess('Usuario rechazado exitosamente');
       await loadUsers();
     } catch (err: any) {
-      setError(err.message || 'Error al rechazar usuario');
+      setError(parseContractError(err, 'Error al rechazar usuario'));
     } finally {
       setActionAddress(null);
     }
@@ -116,7 +117,7 @@ export default function AdminPage() {
       setSuccess('Usuario cancelado exitosamente');
       await loadUsers();
     } catch (err: any) {
-      setError(err.message || 'Error al cancelar usuario');
+      setError(parseContractError(err, 'Error al cancelar usuario'));
     } finally {
       setActionAddress(null);
     }
@@ -136,7 +137,7 @@ export default function AdminPage() {
       }
       await loadPaused();
     } catch (err: any) {
-      setError(err.message || 'Error al cambiar el estado de pausa');
+      setError(parseContractError(err, 'Error al cambiar el estado de pausa'));
     } finally {
       setPausing(false);
     }

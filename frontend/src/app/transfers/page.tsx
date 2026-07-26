@@ -10,6 +10,7 @@ import {
   getAllTransfers,
   getTransferTimeout,
 } from '@/lib/contractFunctions';
+import { parseContractError } from '@/lib/errors';
 import { TransferStatus, TRANSFER_STATUS_NAMES } from '@/lib/contracts';
 import Link from 'next/link';
 
@@ -87,7 +88,7 @@ export default function TransfersPage() {
       setMetadata('');
       await loadTransfers();
     } catch (err: any) {
-      setError(err.message || 'Error al crear transferencia');
+      setError(parseContractError(err, 'Error al crear transferencia'));
     } finally {
       setLoading(false);
     }
@@ -102,7 +103,7 @@ export default function TransfersPage() {
       setSuccess('Transferencia aceptada');
       await loadTransfers();
     } catch (err: any) {
-      setError(err.message || 'Error al aceptar transferencia');
+      setError(parseContractError(err, 'Error al aceptar transferencia'));
     } finally {
       setActionId(null);
     }
@@ -117,7 +118,7 @@ export default function TransfersPage() {
       setSuccess('Transferencia rechazada');
       await loadTransfers();
     } catch (err: any) {
-      setError(err.message || 'Error al rechazar transferencia');
+      setError(parseContractError(err, 'Error al rechazar transferencia'));
     } finally {
       setActionId(null);
     }
@@ -132,7 +133,7 @@ export default function TransfersPage() {
       setSuccess('Transferencia expirada: balance liberado al emisor');
       await loadTransfers();
     } catch (err: any) {
-      setError(err.message || 'Error al expirar transferencia');
+      setError(parseContractError(err, 'Error al expirar transferencia'));
     } finally {
       setActionId(null);
     }
