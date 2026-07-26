@@ -67,6 +67,8 @@ Abre http://localhost:3000 y conecta MetaMask a la red Localhost 8545 (Chain ID 
 
 ## Demo sugerida
 
+Checklist minuto a minuto (5-10 min): [CHECKLIST_DEMO.md](CHECKLIST_DEMO.md)
+
 1. Conectar con la cuenta admin de Anvil (ya registrada automáticamente).
 2. Importar otra cuenta y registrarla como Productor.
 3. Volver al admin y aprobar al usuario.
@@ -80,6 +82,7 @@ Abre http://localhost:3000 y conecta MetaMask a la red Localhost 8545 (Chain ID 
 
 ## Documentación adicional
 
+- [CHECKLIST_DEMO.md](CHECKLIST_DEMO.md) — Checklist de demo (5-10 min)
 - [EJECUTAR_PROYECTO.md](EJECUTAR_PROYECTO.md) — Guía paso a paso
 - [CONFIGURACION_METAMASK.md](CONFIGURACION_METAMASK.md) — Configuración de MetaMask
 - [GUIA_RAPIDA_METAMASK.md](GUIA_RAPIDA_METAMASK.md) — Referencia rápida

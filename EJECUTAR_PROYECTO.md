@@ -155,6 +155,14 @@ Deberías ver:
 
 ---
 
+## 🎬 Checklist de demo (5-10 min)
+
+Para una demostración guiada del flujo completo (admin → roles → tokens → transferencias), usa:
+
+- [CHECKLIST_DEMO.md](CHECKLIST_DEMO.md)
+
+---
+
 ## ✅ Verificación Rápida
 
 Para probar que todo funciona:
