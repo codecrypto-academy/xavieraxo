@@ -83,6 +83,7 @@ Checklist minuto a minuto (5-10 min): [CHECKLIST_DEMO.md](CHECKLIST_DEMO.md)
 ## Documentación adicional
 
 - [CHECKLIST_DEMO.md](CHECKLIST_DEMO.md) — Checklist de demo (5-10 min)
+- [INDICE_PROYECTO.md](INDICE_PROYECTO.md) — Mapa técnico del proyecto
 - [EJECUTAR_PROYECTO.md](EJECUTAR_PROYECTO.md) — Guía paso a paso
 - [CONFIGURACION_METAMASK.md](CONFIGURACION_METAMASK.md) — Configuración de MetaMask
 - [GUIA_RAPIDA_METAMASK.md](GUIA_RAPIDA_METAMASK.md) — Referencia rápida
