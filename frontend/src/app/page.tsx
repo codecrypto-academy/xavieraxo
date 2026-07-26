@@ -3,17 +3,21 @@
 import { useState, useEffect } from 'react';
 import { useWeb3 } from '@/context/Web3Context';
 import { getUser } from '@/lib/contractFunctions';
-import { UserStatus } from '@/lib/contracts';
+import { UserRole, UserStatus } from '@/lib/contracts';
 import Link from 'next/link';
 
 export default function Home() {
   const { isConnected, account, connect } = useWeb3();
   const [userStatus, setUserStatus] = useState<UserStatus | null>(null);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (isConnected && account) {
       loadUserStatus();
+    } else {
+      setUserStatus(null);
+      setUserRole(null);
     }
   }, [isConnected, account]);
 
@@ -23,9 +27,11 @@ export default function Home() {
     try {
       const user = await getUser(account);
       setUserStatus(user.status as UserStatus);
+      setUserRole(user.role as UserRole);
     } catch (error) {
       console.error('Error loading user:', error);
       setUserStatus(UserStatus.NotRegistered);
+      setUserRole(null);
     } finally {
       setLoading(false);
     }
@@ -117,6 +123,8 @@ export default function Home() {
 
   // Estado 4: Aprobado - Mostrar Dashboard
   if (userStatus === UserStatus.Approved) {
+    const isAdmin = userRole === UserRole.Admin;
+
     return (
       <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
         <nav className="bg-white shadow-sm">
@@ -162,10 +170,12 @@ export default function Home() {
               <p className="text-gray-600">Linaje e historial de un token</p>
             </Link>
 
-            <Link href="/admin" className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
-              <h2 className="text-xl font-semibold mb-2 text-gray-800">Panel Admin</h2>
-              <p className="text-gray-600">Gestionar usuarios (solo admin)</p>
-            </Link>
+            {isAdmin && (
+              <Link href="/admin" className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+                <h2 className="text-xl font-semibold mb-2 text-gray-800">Panel Admin</h2>
+                <p className="text-gray-600">Gestionar usuarios (solo admin)</p>
+              </Link>
+            )}
           </div>
         </main>
       </div>
@@ -186,4 +196,3 @@ export default function Home() {
     </div>
   );
 }
-
