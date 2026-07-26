@@ -42,6 +42,9 @@ export default function RegisterPage() {
         <h1 className="text-2xl font-bold text-center mb-6 text-gray-800">
           Registro de Usuario
         </h1>
+        <p className="text-sm text-gray-600 text-center mb-4">
+          Si tu cuenta fue rechazada o cancelada, puedes registrarte de nuevo.
+        </p>
 
         {error && (
           <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">

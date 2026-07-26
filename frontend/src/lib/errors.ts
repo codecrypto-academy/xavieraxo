@@ -14,7 +14,7 @@ const CONTRACT_MESSAGES: Record<string, string> = {
   'String no puede estar vacio': 'El nombre no puede estar vacío.',
   'Metadata no puede estar vacia': 'La metadata no puede estar vacía.',
   'Metadata muy larga': 'La metadata supera el límite permitido (1000 caracteres).',
-  'Usuario ya registrado': 'Esta wallet ya está registrada.',
+  'Usuario ya registrado': 'Esta wallet ya está registrada o aprobada. Si fuiste rechazado/cancelado, vuelve a registrarte.',
   'Usuario no pendiente': 'El usuario no está pendiente de aprobación.',
   'Estado invalido para cancelar': 'No se puede cancelar un usuario en ese estado.',
   'Token padre no existe': 'El token padre indicado no existe.',

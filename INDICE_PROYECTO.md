@@ -33,6 +33,7 @@ No pertenece a este repo una carpeta `solidity/` externa: el contrato vive en `S
 Implementa:
 - Registro y gestion de usuarios con roles
 - Estados de usuario (Pending, Approved, etc.)
+- Re-registro permitido tras Rejected o Cancelled
 - Creacion de tokens con trazabilidad (token padre)
 - Materia prima (`parentTokenId = 0`) solo por rol Productor
 - Transferencias con aceptacion/rechazo del receptor

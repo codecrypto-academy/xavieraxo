@@ -182,16 +182,23 @@ export default function Home() {
     );
   }
 
-  // Estado rechazado o cancelado
+  // Estado rechazado o cancelado: permitir re-registro
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
       <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">
         <h1 className="text-2xl font-bold text-center mb-4 text-gray-800">
           Cuenta {userStatus === UserStatus.Rejected ? 'Rechazada' : 'Cancelada'}
         </h1>
-        <p className="text-gray-600 text-center">
-          Tu cuenta no puede acceder al sistema. Contacta al administrador.
+        <p className="text-gray-600 text-center mb-6">
+          Tu cuenta no tiene acceso activo. Puedes volver a registrarte para solicitar
+          aprobación otra vez.
         </p>
+        <Link
+          href="/register"
+          className="block w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-4 rounded-lg transition duration-200 text-center"
+        >
+          Volver a registrarse
+        </Link>
       </div>
     </div>
   );

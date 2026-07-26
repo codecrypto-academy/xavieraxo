@@ -42,7 +42,7 @@ npm run build
 #### Foundry (`forge test`)
 
 - Suite: `SupplyChainTracker.t.sol`
-- Resultado: **36 passed, 0 failed, 0 skipped** (incluye restriccion de materia prima a Productor)
+- Resultado: **39 passed, 0 failed, 0 skipped** (incluye re-registro tras Rejected/Cancelled)
 - Cobertura aproximada del contrato (`forge coverage`): ~96% lineas / ~71% ramas
 
 

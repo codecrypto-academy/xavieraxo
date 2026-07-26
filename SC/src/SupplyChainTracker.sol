@@ -180,7 +180,8 @@ contract SupplyChainTracker is ReentrancyGuard, Pausable {
     // ============ USER MANAGEMENT ============
     
     /**
-     * @dev Registra un nuevo usuario con rol específico
+     * @dev Registra un nuevo usuario con rol específico.
+     *      Permite re-registro si el estado previo es Rejected o Cancelled.
      * @param _role Rol del usuario (Producer, Factory, Retailer, Consumer)
      * @param _name Nombre del usuario
      */
@@ -190,7 +191,15 @@ contract SupplyChainTracker is ReentrancyGuard, Pausable {
         validRole(_role) 
         validString(_name) 
     {
-        require(users[msg.sender].status == UserStatus.NotRegistered, "Usuario ya registrado");
+        UserStatus currentStatus = users[msg.sender].status;
+        require(
+            currentStatus == UserStatus.NotRegistered ||
+            currentStatus == UserStatus.Rejected ||
+            currentStatus == UserStatus.Cancelled,
+            "Usuario ya registrado"
+        );
+
+        bool isFirstRegistration = (currentStatus == UserStatus.NotRegistered);
         
         users[msg.sender] = User({
             userAddress: msg.sender,
@@ -200,9 +209,12 @@ contract SupplyChainTracker is ReentrancyGuard, Pausable {
             registrationTime: block.timestamp
         });
         
-        registeredUsers.push(msg.sender);
+        if (isFirstRegistration) {
+            registeredUsers.push(msg.sender);
+        }
+
         emit UserRegistered(msg.sender, _role, _name);
-        emit UserStatusChanged(msg.sender, UserStatus.NotRegistered, UserStatus.Pending);
+        emit UserStatusChanged(msg.sender, currentStatus, UserStatus.Pending);
     }
     
     /**

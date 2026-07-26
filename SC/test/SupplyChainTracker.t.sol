@@ -550,6 +550,48 @@ contract SupplyChainTrackerTest is Test {
         tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1b");
     }
 
+    function test_CanReregisterAfterRejected() public {
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1");
+        tracker.rejectUser(producer);
+
+        uint256 countBefore = tracker.getRegisteredUsersCount();
+
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Factory, "Factory Reintento");
+
+        (address addr, SupplyChainTracker.UserRole role, SupplyChainTracker.UserStatus status, string memory name,) =
+            tracker.users(producer);
+        assertEq(addr, producer);
+        assertEq(uint256(role), uint256(SupplyChainTracker.UserRole.Factory));
+        assertEq(uint256(status), uint256(SupplyChainTracker.UserStatus.Pending));
+        assertEq(name, "Factory Reintento");
+        assertEq(tracker.getRegisteredUsersCount(), countBefore, "No duplicar en registeredUsers");
+    }
+
+    function test_CanReregisterAfterCancelled() public {
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1");
+        tracker.approveUser(producer);
+        tracker.cancelUser(producer);
+
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Retailer, "Retailer Nuevo");
+
+        (,, SupplyChainTracker.UserStatus status,,) = tracker.users(producer);
+        assertEq(uint256(status), uint256(SupplyChainTracker.UserStatus.Pending));
+    }
+
+    function test_CannotReregisterWhileApproved() public {
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1");
+        tracker.approveUser(producer);
+
+        vm.prank(producer);
+        vm.expectRevert("Usuario ya registrado");
+        tracker.registerUser(SupplyChainTracker.UserRole.Factory, "Otro");
+    }
+
     function test_FactoryToRetailerTransferIsValid() public {
         _approveProducerAndFactory();
 
