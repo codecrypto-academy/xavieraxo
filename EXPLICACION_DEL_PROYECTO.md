@@ -1,7 +1,8 @@
-# 🧾 Informe de Cambios de Seguridad – Contrato `SupplyChainTracker`
+# Informe de Cambios de Seguridad – Contrato `SupplyChainTracker`
 
-  
-**Objetivo:** Detallar las mejoras de seguridad implementadas en el contrato inteligente `SupplyChainTracker.sol`, explicando línea por línea los cambios realizados.
+**Objetivo:** Detallar las mejoras de seguridad implementadas en el contrato inteligente `SupplyChainTracker.sol`.
+
+**Nota:** Las referencias a numeros de linea pueden desplazarse si el contrato se modifica. Ante duda, buscar por el nombre de la funcion o del modificador en `SC/src/SupplyChainTracker.sol`.
 
 ---
 
@@ -15,8 +16,8 @@
 * **Herencia:** línea 11 – el contrato ahora hereda de `ReentrancyGuard`.
 * **Uso del modificador `nonReentrant`:**
 
-  * `acceptTransfer()` – línea 384.
-  * `rejectTransfer()` – línea 411.
+  * `acceptTransfer()` – `nonReentrant`
+  * `rejectTransfer()` – `nonReentrant`
 
 **Motivación:** evita ataques donde un actor malicioso pueda llamar múltiples veces una función antes de que termine su ejecución original.
 

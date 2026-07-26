@@ -12,6 +12,7 @@ Plataforma de trazabilidad logistica basada en blockchain EVM.
 
 - `SC/`: contratos, scripts y tests Foundry
 - `frontend/`: DApp (Next.js)
+- `scripts/`: utilidades locales (deploy, sync address, verify)
 - `README.md`: descripcion general
 - `INDICE_PROYECTO.md`: mapa tecnico del proyecto
 - `CHECKLIST_DEMO.md`: checklist de demo (5-10 min)
@@ -20,6 +21,8 @@ Plataforma de trazabilidad logistica basada en blockchain EVM.
 - `CONFIGURACION_METAMASK.md`: configuracion de wallet
 - `GUIA_RAPIDA_METAMASK.md`: referencia rapida
 - `EXPLICACION_DEL_PROYECTO.md`: notas tecnicas
+
+No pertenece a este repo una carpeta `solidity/` externa: el contrato vive en `SC/src/`.
 
 ## 3) Backend on-chain (SC)
 
@@ -116,9 +119,14 @@ anvil
 ```
 
 ### 6.3 Deploy
-```bash
+```powershell
+# Recomendado (deploy Anvil + sync a frontend/.env.local)
+powershell -ExecutionPolicy Bypass -File scripts/deploy-local.ps1
+
+# Alternativa manual
 cd SC
 forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --private-key <PRIVATE_KEY>
+node ../scripts/sync-contract-address.mjs
 ```
 
 ### 6.4 Frontend
@@ -148,13 +156,16 @@ Detalle y resultados: `VERIFICACION_E2E.md`.
 
 - El contrato usa `ReentrancyGuard` y `Pausable` (OpenZeppelin).
 - Hay limite de longitud para metadata en contrato.
-- El frontend carga listados completos para usuarios/tokens/transferencias; en volumen alto convendria paginar o indexar eventos.
+- La vista `/traceability` usa listados on-chain (`getAllTokens` / transferencias) para linaje e historial.
+- En volumen alto convendria paginar o indexar eventos off-chain.
 
 ## 9) Punto de entrada recomendado para lectura de codigo
 
 1. `README.md`
-2. `SC/src/SupplyChainTracker.sol`
-3. `SC/test/SupplyChainTracker.t.sol`
-4. `frontend/src/context/Web3Context.tsx`
-5. `frontend/src/lib/contractFunctions.ts`
-6. `frontend/src/app/page.tsx`
+2. `INDICE_PROYECTO.md` / `VERIFICACION_E2E.md`
+3. `SC/src/SupplyChainTracker.sol`
+4. `SC/test/SupplyChainTracker.t.sol`
+5. `frontend/src/context/Web3Context.tsx`
+6. `frontend/src/lib/contractFunctions.ts`
+7. `frontend/src/app/page.tsx`
+8. `frontend/src/app/traceability/page.tsx`

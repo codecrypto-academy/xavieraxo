@@ -293,10 +293,3 @@ export const unpauseContract = async () => {
   return tx.hash;
 };
 
-// Eventos (se pueden usar con ethers para escuchar eventos)
-export const listenToEvents = (eventName: string, callback: (event: any) => void) => {
-  const provider = getProvider();
-  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
-  contract.on(eventName, callback);
-};
-

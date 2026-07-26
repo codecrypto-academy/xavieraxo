@@ -23,16 +23,24 @@ El sistema modela la cadena de suministro como una secuencia de actores con role
 ## Estructura del proyecto
 
 ```
-├── SC/                 # Smart Contracts (Foundry)
+├── SC/                      # Smart Contracts (Foundry)
 │   ├── src/
 │   ├── test/
 │   └── script/
-├── frontend/           # DApp (Next.js + TypeScript)
+├── frontend/                # DApp (Next.js + TypeScript)
 │   └── src/
+├── scripts/                 # Deploy local, sync address, verify
+├── README.md
+├── INDICE_PROYECTO.md
 ├── EJECUTAR_PROYECTO.md
+├── CHECKLIST_DEMO.md
+├── VERIFICACION_E2E.md
 ├── CONFIGURACION_METAMASK.md
-└── GUIA_RAPIDA_METAMASK.md
+├── GUIA_RAPIDA_METAMASK.md
+└── EXPLICACION_DEL_PROYECTO.md
 ```
+
+La raiz del repositorio es este proyecto (`SC/` + `frontend/` + `scripts/` + docs). No hay carpeta `solidity/` separada.
 
 ## Requisitos
 
