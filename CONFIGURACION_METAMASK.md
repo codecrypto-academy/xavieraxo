@@ -211,7 +211,9 @@ Fondos:        10,000 ETH
    forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
    ```
 
-4. **Actualiza la dirección del contrato** en `frontend/src/lib/contracts.ts` si cambió
+4. **Sincroniza la dirección del contrato** con:
+   `node scripts/sync-contract-address.mjs`
+   (o usa `scripts/deploy-local.ps1` que hace deploy + sync)
 
 5. **Reinicia el frontend:** 
    - Presiona `Ctrl+C` en la terminal del frontend

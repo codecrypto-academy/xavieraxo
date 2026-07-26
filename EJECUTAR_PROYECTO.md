@@ -55,33 +55,53 @@ Listening on 127.0.0.1:8545
 
 ---
 
-## 🚀 Paso 4: Desplegar el Contrato
+## 🚀 Paso 4: Desplegar el Contrato (y sincronizar address)
 
-**Abre OTRA terminal nueva** (deja Anvil corriendo):
+**Abre OTRA terminal nueva** (deja Anvil corriendo).
+
+### Opción recomendada (deploy + sync automático)
+
+Desde la raíz del repo:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/deploy-local.ps1
+```
+
+Esto despliega el contrato y escribe `frontend/.env.local` con `NEXT_PUBLIC_CONTRACT_ADDRESS`.
+
+### Opción manual
 
 ```powershell
 cd SC
 forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
 
-**Busca en el output:**
-```
-== Return ==
-Contract deployed at: 0x5FbDB2315678afecb367f032d93F642f64180aa3
+Luego, desde la raíz del repo:
+
+```powershell
+node scripts/sync-contract-address.mjs
 ```
 
-**📝 Copia esa dirección del contrato** (será algo como `0x...`)
+**Busca en el output del deploy:**
+```
+SupplyChainTracker desplegado en: 0x...
+```
 
 ---
 
-## ⚙️ Paso 5: Configurar el Frontend
+## ⚙️ Paso 5: Configurar el Frontend (address)
 
-Edita el archivo `frontend/src/lib/contracts.ts`:
+Con el sync del Paso 4, `frontend/.env.local` ya tiene la address.
 
-```typescript
-export const CONTRACT_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3"; 
-// ↑ Reemplaza con la dirección que copiaste en el paso anterior
-```
+Si preferís hacerlo a mano:
+
+1. Copiá `frontend/.env.local.example` a `frontend/.env.local`
+2. Pegá la address del deploy en `NEXT_PUBLIC_CONTRACT_ADDRESS`
+
+El frontend lee esa variable en `frontend/src/lib/contracts.ts`.  
+**No hace falta editar el código** tras cada redeploy si usás el script de sync.
+
+Si `npm run dev` ya estaba corriendo, reinicialo para cargar el nuevo `.env.local`.
 
 ---
 
@@ -200,9 +220,10 @@ Para ejecutar el proyecto necesitas **2 terminales** abiertas simultáneamente:
 - Verifica que el Chain ID sea `31337`
 
 ### "El contrato no funciona"
-- Verifica que la dirección en `frontend/src/lib/contracts.ts` sea correcta
+- Verifica que `frontend/.env.local` tenga la address correcta (`NEXT_PUBLIC_CONTRACT_ADDRESS`)
+- Regenera la address con: `node scripts/sync-contract-address.mjs`
 - Verifica que el contrato se haya desplegado correctamente (Paso 4)
-- Asegúrate de haber copiado la dirección correcta del output del deployment
+- Reinicia `npm run dev` después de cambiar `.env.local`
 
 ### "Puerto 3000 en uso"
 ```powershell
@@ -229,8 +250,11 @@ forge test
 # Iniciar blockchain local
 anvil
 
-# Desplegar el contrato
-forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
+# Desplegar el contrato + sync address al frontend
+powershell -ExecutionPolicy Bypass -File scripts/deploy-local.ps1
+
+# Solo sincronizar address desde el ultimo broadcast
+node scripts/sync-contract-address.mjs
 
 # Iniciar el frontend
 npm run dev

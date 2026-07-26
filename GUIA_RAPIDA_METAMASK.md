@@ -207,7 +207,8 @@ npm run dev
 cd SC
 forge script script/Deploy.s.sol --rpc-url http://127.0.0.1:8545 --broadcast --private-key 0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80
 ```
-4. Actualiza la dirección del contrato en `frontend/src/lib/contracts.ts` si cambió
+4. Sincroniza la address: `node scripts/sync-contract-address.mjs`
+   (o usa `scripts/deploy-local.ps1`)
 5. Reinicia el frontend
 6. En MetaMask, cambia a otra red y vuelve a "Localhost 8545" (para refrescar el balance)
 

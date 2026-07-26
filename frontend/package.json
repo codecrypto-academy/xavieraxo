@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "sync:address": "node ../scripts/sync-contract-address.mjs"
   },
   "dependencies": {
     "next": "^14.0.0",

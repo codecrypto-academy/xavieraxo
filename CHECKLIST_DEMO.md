@@ -6,7 +6,7 @@ Setup completo (Anvil, deploy, MetaMask, frontend): ver EJECUTAR_PROYECTO.md.
 ## Antes de empezar
 
 - [ ] Anvil corriendo en http://127.0.0.1:8545 (Chain ID 31337)
-- [ ] Contrato desplegado y address actualizada en frontend/src/lib/contracts.ts (o .env.local)
+- [ ] Contrato desplegado y address sincronizada (`scripts/deploy-local.ps1` o `node scripts/sync-contract-address.mjs`)
 - [ ] Frontend en http://localhost:3000
 - [ ] MetaMask en red Localhost 8545
 

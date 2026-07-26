@@ -128,8 +128,11 @@ npm run dev
 
 ## 7) Configuracion importante
 
-- Variable opcional frontend:
-  - `NEXT_PUBLIC_CONTRACT_ADDRESS`
+- Variable frontend:
+  - `NEXT_PUBLIC_CONTRACT_ADDRESS` en `frontend/.env.local`
+- Sync automatico tras deploy:
+  - `node scripts/sync-contract-address.mjs`
+  - o `powershell -File scripts/deploy-local.ps1` (deploy + sync)
 - Si no se define, el frontend usa una direccion local por defecto en `frontend/src/lib/contracts.ts`
 
 ## 8) Observaciones tecnicas

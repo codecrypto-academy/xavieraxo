@@ -1,8 +1,11 @@
-// Dirección del contrato desplegado (se actualizará después del deployment)
-export const CONTRACT_ADDRESS = 
-  typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_CONTRACT_ADDRESS 
-    ? process.env.NEXT_PUBLIC_CONTRACT_ADDRESS 
-    : "0x5FbDB2315678afecb367f032d93F642f64180aa3";// aca va la cadena de contratos
+// Preferir NEXT_PUBLIC_CONTRACT_ADDRESS (frontend/.env.local).
+// Tras deploy local: node scripts/sync-contract-address.mjs
+// o: powershell -File scripts/deploy-local.ps1
+const DEFAULT_LOCAL_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
+
+export const CONTRACT_ADDRESS =
+  (typeof process !== "undefined" && process.env?.NEXT_PUBLIC_CONTRACT_ADDRESS) ||
+  DEFAULT_LOCAL_ADDRESS;
 
 // ABI del contrato SupplyChainTracker
 export const SUPPLY_CHAIN_TRACKER_ABI = [
