@@ -112,7 +112,9 @@ export default function TokensPage() {
     }
   };
 
-  const isOwner = (owner: string) => account?.toLowerCase() === owner.toLowerCase();
+  const canEditMetadata = (token: TokenData) =>
+    Boolean(account) &&
+    (token.balance > 0 || account!.toLowerCase() === token.owner.toLowerCase());
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -299,7 +301,7 @@ export default function TokensPage() {
                     >
                       Ver trazabilidad →
                     </Link>
-                    {isOwner(token.owner) && editingTokenId !== token.tokenId && (
+                    {canEditMetadata(token) && editingTokenId !== token.tokenId && (
                       <button
                         onClick={() => startEdit(token.tokenId, token.metadata)}
                         className="text-blue-600 hover:text-blue-700 text-sm font-medium"

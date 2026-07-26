@@ -229,7 +229,7 @@ Seguridad del contrato: [EXPLICACION_DEL_PROYECTO.md](EXPLICACION_DEL_PROYECTO.m
 
 - Ejecución pensada para red local (Anvil), no producción/mainnet
 - Listados on-chain sin indexer externo (suficiente para demo; escala limitada)
-- `Token.owner` no se actualiza al aceptar transferencias (el balance sí)
+- `Token.owner` pasa al receptor solo cuando el emisor queda con balance 0; con saldos compartidos cualquier titular con balance puede editar metadata
 - Timeout de 30 días: en demo real suele mostrarse con `vm.warp` en tests
 
 ---

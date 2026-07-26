@@ -36,6 +36,8 @@ Implementa:
 - Re-registro permitido tras Rejected o Cancelled
 - Creacion de tokens con trazabilidad (token padre)
 - Materia prima (`parentTokenId = 0`) solo por rol Productor
+- Owner del token se actualiza al aceptar si el emisor queda sin balance
+- Titulares con balance pueden editar metadata
 - Transferencias con aceptacion/rechazo del receptor
 - Cancelacion de transferencia pendiente por el emisor (`cancelTransfer`)
 - Timeout de transferencias pendientes (`TRANSFER_TIMEOUT` + `expireTransfer`)

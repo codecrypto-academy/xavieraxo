@@ -329,7 +329,10 @@ contract SupplyChainTracker is ReentrancyGuard, Pausable {
         tokenExists(_tokenId) 
         validMetadata(_newMetadata) 
     {
-        require(tokens[_tokenId].owner == msg.sender, "No eres el propietario");
+        require(
+            tokens[_tokenId].owner == msg.sender || balances[msg.sender][_tokenId] > 0,
+            "No eres titular del token"
+        );
         
         tokens[_tokenId].metadata = _newMetadata;
         emit TokenMetadataUpdated(_tokenId, _newMetadata);
@@ -422,6 +425,11 @@ contract SupplyChainTracker is ReentrancyGuard, Pausable {
         
         // Transferir el balance al receptor
         balances[msg.sender][transfer.tokenId] += transfer.amount;
+
+        // Si el emisor ya no tiene saldo de este token, el receptor pasa a ser owner
+        if (balances[transfer.from][transfer.tokenId] == 0) {
+            tokens[transfer.tokenId].owner = msg.sender;
+        }
         
         emit TransferStatusChanged(_transferId, TransferStatus.Accepted);
         emit BalanceUpdated(msg.sender, transfer.tokenId, balances[msg.sender][transfer.tokenId]);

@@ -20,6 +20,8 @@ const CONTRACT_MESSAGES: Record<string, string> = {
   'Token padre no existe': 'El token padre indicado no existe.',
   'No tienes el token padre': 'No tienes el token padre necesario para crear este derivado.',
   'No eres el propietario': 'Solo el propietario del token puede editar su metadata.',
+  'No eres titular del token':
+    'Solo el owner o quien tenga balance de este token puede editar la metadata.',
   'No puedes transferirte a ti mismo': 'No puedes transferirte tokens a ti mismo.',
   'Balance insuficiente': 'No tienes suficiente balance de ese token.',
   'Receptor no aprobado': 'El receptor aún no está aprobado en el sistema.',

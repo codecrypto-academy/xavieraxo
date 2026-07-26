@@ -488,8 +488,48 @@ contract SupplyChainTrackerTest is Test {
         uint256 tokenId = tracker.createToken('{"nombre": "Trigo"}', 0, 100);
 
         vm.prank(factory);
-        vm.expectRevert("No eres el propietario");
+        vm.expectRevert("No eres titular del token");
         tracker.updateTokenMetadata(tokenId, '{"nombre": "Hack"}');
+    }
+
+    function test_OwnerTransfersWhenSenderBalanceIsZero() public {
+        _approveProducerAndFactory();
+
+        vm.prank(producer);
+        uint256 tokenId = tracker.createToken('{"nombre": "Trigo"}', 0, 100);
+
+        vm.prank(producer);
+        tracker.createTransfer(tokenId, factory, 100, "");
+        vm.prank(factory);
+        tracker.acceptTransfer(1);
+
+        SupplyChainTracker.Token memory token = tracker.getToken(tokenId);
+        assertEq(token.owner, factory, "Owner debe pasar al receptor si el emisor queda en 0");
+
+        vm.prank(factory);
+        tracker.updateTokenMetadata(tokenId, '{"nombre": "Trigo en planta"}');
+        assertEq(tracker.getToken(tokenId).metadata, '{"nombre": "Trigo en planta"}');
+    }
+
+    function test_PartialTransferKeepsOriginalOwnerButHolderCanEdit() public {
+        _approveProducerAndFactory();
+
+        vm.prank(producer);
+        uint256 tokenId = tracker.createToken('{"nombre": "Trigo"}', 0, 100);
+
+        vm.prank(producer);
+        tracker.createTransfer(tokenId, factory, 40, "");
+        vm.prank(factory);
+        tracker.acceptTransfer(1);
+
+        SupplyChainTracker.Token memory token = tracker.getToken(tokenId);
+        assertEq(token.owner, producer, "Owner se mantiene si el emisor aun tiene saldo");
+        assertEq(tracker.getBalance(producer, tokenId), 60);
+        assertEq(tracker.getBalance(factory, tokenId), 40);
+
+        vm.prank(factory);
+        tracker.updateTokenMetadata(tokenId, '{"nombre": "Trigo compartido"}');
+        assertEq(tracker.getToken(tokenId).metadata, '{"nombre": "Trigo compartido"}');
     }
 
     function test_CannotCreateTokenWithZeroAmount() public {
