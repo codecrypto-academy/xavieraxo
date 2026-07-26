@@ -35,6 +35,7 @@ El sistema modela la cadena de suministro como una secuencia de actores con role
 ├── EJECUTAR_PROYECTO.md
 ├── CHECKLIST_DEMO.md
 ├── VERIFICACION_E2E.md
+├── DOCUMENTO_ENTREGA.md
 ├── CONFIGURACION_METAMASK.md
 ├── GUIA_RAPIDA_METAMASK.md
 └── EXPLICACION_DEL_PROYECTO.md
@@ -90,6 +91,7 @@ Checklist minuto a minuto (5-10 min): [CHECKLIST_DEMO.md](CHECKLIST_DEMO.md)
 
 ## Documentación adicional
 
+- [DOCUMENTO_ENTREGA.md](DOCUMENTO_ENTREGA.md) — Documento de entrega / defensa
 - [CHECKLIST_DEMO.md](CHECKLIST_DEMO.md) — Checklist de demo (5-10 min)
 - [VERIFICACION_E2E.md](VERIFICACION_E2E.md) — Verificacion automatizada + criterios E2E
 - [INDICE_PROYECTO.md](INDICE_PROYECTO.md) — Mapa técnico del proyecto

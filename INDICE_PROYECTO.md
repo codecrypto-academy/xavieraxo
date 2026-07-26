@@ -17,6 +17,7 @@ Plataforma de trazabilidad logistica basada en blockchain EVM.
 - `INDICE_PROYECTO.md`: mapa tecnico del proyecto
 - `CHECKLIST_DEMO.md`: checklist de demo (5-10 min)
 - `VERIFICACION_E2E.md`: verificacion automatizada y criterios E2E
+- `DOCUMENTO_ENTREGA.md`: documento de entrega / defensa academica
 - `EJECUTAR_PROYECTO.md`: guia de ejecucion
 - `CONFIGURACION_METAMASK.md`: configuracion de wallet
 - `GUIA_RAPIDA_METAMASK.md`: referencia rapida
@@ -165,11 +166,12 @@ Detalle y resultados: `VERIFICACION_E2E.md`.
 
 ## 9) Punto de entrada recomendado para lectura de codigo
 
-1. `README.md`
-2. `INDICE_PROYECTO.md` / `VERIFICACION_E2E.md`
-3. `SC/src/SupplyChainTracker.sol`
-4. `SC/test/SupplyChainTracker.t.sol`
-5. `frontend/src/context/Web3Context.tsx`
-6. `frontend/src/lib/contractFunctions.ts`
-7. `frontend/src/app/page.tsx`
-8. `frontend/src/app/traceability/page.tsx`
+1. `DOCUMENTO_ENTREGA.md`
+2. `README.md`
+3. `INDICE_PROYECTO.md` / `VERIFICACION_E2E.md`
+4. `SC/src/SupplyChainTracker.sol`
+5. `SC/test/SupplyChainTracker.t.sol`
+6. `frontend/src/context/Web3Context.tsx`
+7. `frontend/src/lib/contractFunctions.ts`
+8. `frontend/src/app/page.tsx`
+9. `frontend/src/app/traceability/page.tsx`
