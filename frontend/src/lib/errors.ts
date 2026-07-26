@@ -3,6 +3,8 @@
  */
 
 const CONTRACT_MESSAGES: Record<string, string> = {
+  'Solo productor crea materia prima':
+    'Solo un Productor aprobado puede crear materia prima (token padre = 0).',
   'Solo administrador': 'Solo el administrador puede realizar esta acción.',
   'Usuario no aprobado': 'Tu cuenta aún no está aprobada.',
   'Rol invalido': 'El rol seleccionado no es válido.',

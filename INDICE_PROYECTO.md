@@ -34,6 +34,7 @@ Implementa:
 - Registro y gestion de usuarios con roles
 - Estados de usuario (Pending, Approved, etc.)
 - Creacion de tokens con trazabilidad (token padre)
+- Materia prima (`parentTokenId = 0`) solo por rol Productor
 - Transferencias con aceptacion/rechazo del receptor
 - Cancelacion de transferencia pendiente por el emisor (`cancelTransfer`)
 - Timeout de transferencias pendientes (`TRANSFER_TIMEOUT` + `expireTransfer`)

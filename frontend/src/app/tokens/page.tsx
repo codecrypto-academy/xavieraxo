@@ -2,8 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useWeb3 } from '@/context/Web3Context';
-import { createToken, getUserTokens, updateTokenMetadata } from '@/lib/contractFunctions';
+import { createToken, getUser, getUserTokens, updateTokenMetadata } from '@/lib/contractFunctions';
 import { parseContractError } from '@/lib/errors';
+import { UserRole, ROLE_NAMES } from '@/lib/contracts';
 import Link from 'next/link';
 
 interface TokenData {
@@ -31,13 +32,15 @@ export default function TokensPage() {
   const [editingTokenId, setEditingTokenId] = useState<number | null>(null);
   const [editMetadata, setEditMetadata] = useState('');
   const [savingEdit, setSavingEdit] = useState(false);
+  const [userRole, setUserRole] = useState<UserRole | null>(null);
 
   const loadTokens = useCallback(async () => {
     if (!account) return;
     setLoadingList(true);
     try {
-      const userTokens = await getUserTokens(account);
+      const [userTokens, user] = await Promise.all([getUserTokens(account), getUser(account)]);
       setTokens(userTokens);
+      setUserRole(user.role as UserRole);
     } catch (err) {
       console.error('Error loading tokens:', err);
       setError('No se pudieron cargar los tokens');
@@ -165,6 +168,12 @@ export default function TokensPage() {
         {showCreateForm && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 className="text-xl font-semibold mb-4 text-gray-800">Crear Nuevo Token</h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Materia prima (padre vacío / 0): solo rol Productor.
+              {userRole !== null && (
+                <span className="ml-1">Tu rol actual: {ROLE_NAMES[userRole]}.</span>
+              )}
+            </p>
             <form onSubmit={handleCreateToken} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -192,6 +201,9 @@ export default function TokensPage() {
                   placeholder="0"
                   min="0"
                 />
+                <p className="text-xs text-gray-500 mt-1">
+                  Para productos derivados, indica el ID del token padre que posees.
+                </p>
               </div>
 
               <div>

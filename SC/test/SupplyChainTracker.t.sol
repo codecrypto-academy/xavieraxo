@@ -195,7 +195,11 @@ contract SupplyChainTrackerTest is Test {
     }
     
     function test_RetailerRejectsTransfer() public {
-        // Setup
+        // Setup: productor crea materia prima y la entrega a factory; factory deriva producto
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1");
+        tracker.approveUser(producer);
+
         vm.prank(factory);
         tracker.registerUser(SupplyChainTracker.UserRole.Factory, "Factory 1");
         tracker.approveUser(factory);
@@ -204,8 +208,16 @@ contract SupplyChainTrackerTest is Test {
         tracker.registerUser(SupplyChainTracker.UserRole.Retailer, "Retailer 1");
         tracker.approveUser(retailer);
         
+        vm.prank(producer);
+        uint256 rawId = tracker.createToken('{"nombre": "Trigo"}', 0, 100);
+
+        vm.prank(producer);
+        tracker.createTransfer(rawId, factory, 100, "");
         vm.prank(factory);
-        uint256 tokenId = tracker.createToken('{"nombre": "Harina"}', 0, 100);
+        tracker.acceptTransfer(1);
+
+        vm.prank(factory);
+        uint256 tokenId = tracker.createToken('{"nombre": "Harina"}', rawId, 100);
         
         vm.prank(factory);
         tracker.createTransfer(tokenId, retailer, 50, "");
@@ -213,9 +225,9 @@ contract SupplyChainTrackerTest is Test {
         uint256 factoryBalanceBefore = tracker.getBalance(factory, tokenId);
         
         vm.prank(retailer);
-        tracker.rejectTransfer(1);
+        tracker.rejectTransfer(2);
         
-        SupplyChainTracker.Transfer memory transfer = tracker.getTransfer(1);
+        SupplyChainTracker.Transfer memory transfer = tracker.getTransfer(2);
         assertEq(uint256(transfer.status), uint256(SupplyChainTracker.TransferStatus.Rejected), "Estado deberia ser Rejected");
         
         uint256 factoryBalanceAfter = tracker.getBalance(factory, tokenId);
@@ -545,17 +557,37 @@ contract SupplyChainTrackerTest is Test {
         tracker.registerUser(SupplyChainTracker.UserRole.Retailer, "Retailer 1");
         tracker.approveUser(retailer);
 
+        vm.prank(producer);
+        uint256 rawId = tracker.createToken('{"nombre": "Trigo"}', 0, 100);
+
+        vm.prank(producer);
+        tracker.createTransfer(rawId, factory, 100, "");
         vm.prank(factory);
-        uint256 tokenId = tracker.createToken('{"nombre": "Harina"}', 0, 50);
+        tracker.acceptTransfer(1);
+
+        vm.prank(factory);
+        uint256 tokenId = tracker.createToken('{"nombre": "Harina"}', rawId, 50);
 
         vm.prank(factory);
         tracker.createTransfer(tokenId, retailer, 20, "lote-1");
 
         vm.prank(retailer);
-        tracker.acceptTransfer(1);
+        tracker.acceptTransfer(2);
 
         assertEq(tracker.getBalance(retailer, tokenId), 20, "Retailer recibe 20");
         assertEq(tracker.getBalance(factory, tokenId), 30, "Factory conserva 30");
+    }
+
+    function test_OnlyProducerCanCreateRawMaterial() public {
+        _approveProducerAndFactory();
+
+        vm.prank(factory);
+        vm.expectRevert("Solo productor crea materia prima");
+        tracker.createToken('{"nombre": "Trigo"}', 0, 50);
+
+        vm.prank(producer);
+        uint256 tokenId = tracker.createToken('{"nombre": "Trigo"}', 0, 50);
+        assertEq(tokenId, 1, "Productor si puede crear materia prima");
     }
 }
 

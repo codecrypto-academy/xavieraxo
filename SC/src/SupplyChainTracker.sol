@@ -269,6 +269,14 @@ contract SupplyChainTracker is ReentrancyGuard, Pausable {
         returns (uint256) 
     {
         bool isRawMaterial = (_parentTokenId == 0);
+
+        // Solo el Productor puede crear materia prima (sin token padre)
+        if (isRawMaterial) {
+            require(
+                users[msg.sender].role == UserRole.Producer,
+                "Solo productor crea materia prima"
+            );
+        }
         
         // Validar parentesco si no es materia prima
         if (!isRawMaterial) {
