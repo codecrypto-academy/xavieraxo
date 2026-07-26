@@ -15,6 +15,7 @@ Plataforma de trazabilidad logistica basada en blockchain EVM.
 - `README.md`: descripcion general
 - `INDICE_PROYECTO.md`: mapa tecnico del proyecto
 - `CHECKLIST_DEMO.md`: checklist de demo (5-10 min)
+- `VERIFICACION_E2E.md`: verificacion automatizada y criterios E2E
 - `EJECUTAR_PROYECTO.md`: guia de ejecucion
 - `CONFIGURACION_METAMASK.md`: configuracion de wallet
 - `GUIA_RAPIDA_METAMASK.md`: referencia rapida
@@ -126,6 +127,13 @@ cd frontend
 npm install
 npm run dev
 ```
+
+### 6.5 Verificacion automatizada
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/verify.ps1
+```
+
+Detalle y resultados: `VERIFICACION_E2E.md`.
 
 ## 7) Configuracion importante
 

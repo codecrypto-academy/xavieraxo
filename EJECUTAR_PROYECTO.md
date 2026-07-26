@@ -256,9 +256,14 @@ powershell -ExecutionPolicy Bypass -File scripts/deploy-local.ps1
 # Solo sincronizar address desde el ultimo broadcast
 node scripts/sync-contract-address.mjs
 
+# Verificacion automatizada (forge test + tsc + build)
+powershell -ExecutionPolicy Bypass -File scripts/verify.ps1
+
 # Iniciar el frontend
 npm run dev
 ```
+
+Detalle de criterios y resultados: [VERIFICACION_E2E.md](VERIFICACION_E2E.md).
 
 ---
 
