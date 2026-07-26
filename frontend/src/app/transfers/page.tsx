@@ -6,7 +6,9 @@ import {
   createTransfer,
   acceptTransfer,
   rejectTransfer,
+  expireTransfer,
   getAllTransfers,
+  getTransferTimeout,
 } from '@/lib/contractFunctions';
 import { TransferStatus, TRANSFER_STATUS_NAMES } from '@/lib/contracts';
 import Link from 'next/link';
@@ -35,12 +37,16 @@ export default function TransfersPage() {
   const [amount, setAmount] = useState('');
   const [metadata, setMetadata] = useState('');
   const [transfers, setTransfers] = useState<TransferData[]>([]);
+  const [timeoutSec, setTimeoutSec] = useState<number>(30 * 24 * 60 * 60);
+  const [nowSec, setNowSec] = useState(() => Math.floor(Date.now() / 1000));
 
   const loadTransfers = useCallback(async () => {
     setLoadingList(true);
     try {
-      const all = await getAllTransfers();
+      const [all, timeout] = await Promise.all([getAllTransfers(), getTransferTimeout()]);
       setTransfers(all);
+      setTimeoutSec(timeout);
+      setNowSec(Math.floor(Date.now() / 1000));
     } catch (err) {
       console.error('Error loading transfers:', err);
       setError('No se pudieron cargar las transferencias');
@@ -54,6 +60,9 @@ export default function TransfersPage() {
       loadTransfers();
     }
   }, [account, loadTransfers]);
+
+  const isExpiredPending = (t: TransferData) =>
+    t.status === TransferStatus.Pending && nowSec > t.timestamp + timeoutSec;
 
   const handleCreateTransfer = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -114,15 +123,36 @@ export default function TransfersPage() {
     }
   };
 
-  const statusBadge = (status: number) => {
+  const handleExpireTransfer = async (transferId: number) => {
+    setActionId(transferId);
+    setError('');
+    setSuccess('');
+    try {
+      await expireTransfer(transferId);
+      setSuccess('Transferencia expirada: balance liberado al emisor');
+      await loadTransfers();
+    } catch (err: any) {
+      setError(err.message || 'Error al expirar transferencia');
+    } finally {
+      setActionId(null);
+    }
+  };
+
+  const statusBadge = (t: TransferData) => {
+    const expiredPending = isExpiredPending(t);
+    const status = expiredPending ? TransferStatus.Expired : t.status;
     const styles: Record<number, string> = {
       [TransferStatus.Pending]: 'bg-yellow-100 text-yellow-800',
       [TransferStatus.Accepted]: 'bg-green-100 text-green-800',
       [TransferStatus.Rejected]: 'bg-red-100 text-red-800',
+      [TransferStatus.Expired]: 'bg-orange-100 text-orange-800',
     };
+    const label = expiredPending
+      ? 'Pendiente (expirada)'
+      : TRANSFER_STATUS_NAMES[status as TransferStatus];
     return (
       <span className={`px-2 py-1 text-xs font-medium rounded-full ${styles[status] || 'bg-gray-100 text-gray-800'}`}>
-        {TRANSFER_STATUS_NAMES[status as TransferStatus]}
+        {label}
       </span>
     );
   };
@@ -131,11 +161,17 @@ export default function TransfersPage() {
   const isMine = (addr: string) => account?.toLowerCase() === addr.toLowerCase();
 
   const incomingPending = transfers.filter(
-    (t) => isMine(t.to) && t.status === TransferStatus.Pending
+    (t) => isMine(t.to) && t.status === TransferStatus.Pending && !isExpiredPending(t)
   );
-  const history = transfers.filter(
-    (t) => isMine(t.to) || isMine(t.from)
+  const recoverableExpired = transfers.filter(
+    (t) =>
+      t.status === TransferStatus.Pending &&
+      isExpiredPending(t) &&
+      (isMine(t.from) || isMine(t.to))
   );
+  const history = transfers.filter((t) => isMine(t.to) || isMine(t.from));
+
+  const timeoutDays = Math.round(timeoutSec / (24 * 60 * 60));
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -158,7 +194,13 @@ export default function TransfersPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8 flex justify-between items-center">
-          <h1 className="text-3xl font-bold text-gray-800">Transferencias</h1>
+          <div>
+            <h1 className="text-3xl font-bold text-gray-800">Transferencias</h1>
+            <p className="text-sm text-gray-600 mt-1">
+              Timeout de pendientes: {timeoutDays} días. Luego se puede liberar el balance con
+              &quot;Expirar&quot;.
+            </p>
+          </div>
           <div className="flex items-center space-x-2">
             <button
               onClick={loadTransfers}
@@ -193,9 +235,7 @@ export default function TransfersPage() {
             <h2 className="text-xl font-semibold mb-4 text-gray-800">Crear Transferencia</h2>
             <form onSubmit={handleCreateTransfer} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Token ID
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Token ID</label>
                 <input
                   type="number"
                   value={tokenId}
@@ -222,9 +262,7 @@ export default function TransfersPage() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Cantidad
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Cantidad</label>
                 <input
                   type="number"
                   value={amount}
@@ -307,6 +345,38 @@ export default function TransfersPage() {
           )}
         </div>
 
+        {recoverableExpired.length > 0 && (
+          <div className="bg-white rounded-lg shadow-md p-6 mb-6">
+            <h2 className="text-xl font-semibold mb-4 text-gray-800">
+              Transferencias expiradas por liberar ({recoverableExpired.length})
+            </h2>
+            <div className="space-y-3">
+              {recoverableExpired.map((t) => (
+                <div
+                  key={t.transferId}
+                  className="flex flex-col md:flex-row md:items-center md:justify-between border border-orange-200 rounded-lg p-4 gap-3 bg-orange-50"
+                >
+                  <div>
+                    <p className="font-semibold text-gray-800">
+                      Transferencia #{t.transferId} · Token #{t.tokenId}
+                    </p>
+                    <p className="text-sm text-gray-600">
+                      Cantidad reservada: {t.amount} · Emisor: {short(t.from)}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => handleExpireTransfer(t.transferId)}
+                    disabled={actionId === t.transferId}
+                    className="bg-orange-600 hover:bg-orange-700 disabled:bg-orange-400 text-white font-semibold py-2 px-4 rounded-lg text-sm"
+                  >
+                    {actionId === t.transferId ? 'Procesando...' : 'Expirar y liberar'}
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
         <div className="bg-white rounded-lg shadow-md p-6">
           <h2 className="text-xl font-semibold mb-4 text-gray-800">
             Mi Historial de Transferencias ({history.length})
@@ -341,7 +411,7 @@ export default function TransfersPage() {
                         {isMine(t.to) ? 'Yo' : short(t.to)}
                       </td>
                       <td className="px-4 py-3 text-sm text-gray-600">{t.amount}</td>
-                      <td className="px-4 py-3 text-sm">{statusBadge(t.status)}</td>
+                      <td className="px-4 py-3 text-sm">{statusBadge(t)}</td>
                     </tr>
                   ))}
                 </tbody>

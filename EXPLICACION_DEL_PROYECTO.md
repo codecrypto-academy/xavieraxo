@@ -76,9 +76,9 @@
 
 ### a. Definición de constantes
 
-* **Líneas 84-88:** `MAX_METADATA_LENGTH = 1000`, `TRANSFER_TIMEOUT`.
+* **Constantes:** `MAX_METADATA_LENGTH = 1000`, `TRANSFER_TIMEOUT = 30 days`.
 
-**Uso:** limitar longitud de metadata y preparar lógica futura para vencimiento de transferencias.
+**Uso:** limitar longitud de metadata y expirar transferencias pendientes. Tras el timeout no se puede aceptar/rechazar; `expireTransfer` libera el balance al emisor.
 
 ---
 

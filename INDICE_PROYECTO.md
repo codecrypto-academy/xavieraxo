@@ -34,6 +34,7 @@ Implementa:
 - Estados de usuario (Pending, Approved, etc.)
 - Creacion de tokens con trazabilidad (token padre)
 - Transferencias con aceptacion/rechazo del receptor
+- Timeout de transferencias pendientes (`TRANSFER_TIMEOUT` + `expireTransfer`)
 - Pausa de emergencia del contrato
 
 ### 3.2 Script de despliegue

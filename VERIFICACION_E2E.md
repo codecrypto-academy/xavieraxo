@@ -42,20 +42,7 @@ npm run build
 #### Foundry (`forge test`)
 
 - Suite: `SupplyChainTracker.t.sol`
-- Resultado: **12 passed, 0 failed, 0 skipped**
-- Tests:
-  - `test_AdminIsAutomaticallyRegistered`
-  - `test_ProducerCanRegister`
-  - `test_AdminApprovesUser`
-  - `test_AdminRejectsUser`
-  - `test_OnlyAdminCanApprove`
-  - `test_ProducerCreatesToken`
-  - `test_FactoryCreatesProductFromRawMaterial`
-  - `test_ProducerTransfersToFactory`
-  - `test_FactoryAcceptsTransfer`
-  - `test_ProducerCannotTransferToRetailer`
-  - `test_RetailerRejectsTransfer`
-  - `test_FullSupplyChainFlow`
+- Resultado: **16 passed, 0 failed, 0 skipped** (incluye timeout de transferencias)
 
 #### TypeScript (`npx tsc --noEmit`)
 

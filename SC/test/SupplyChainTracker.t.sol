@@ -275,5 +275,68 @@ contract SupplyChainTrackerTest is Test {
         SupplyChainTracker.Transfer memory finalTransfer = tracker.getTransfer(3);
         assertEq(uint256(finalTransfer.status), uint256(SupplyChainTracker.TransferStatus.Accepted), "Transferencia final deberia ser aceptada");
     }
+
+    // ============ TRANSFER TIMEOUT TESTS ============
+
+    function _setupProducerFactoryWithPendingTransfer() internal returns (uint256 transferId, uint256 tokenId) {
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1");
+        tracker.approveUser(producer);
+
+        vm.prank(factory);
+        tracker.registerUser(SupplyChainTracker.UserRole.Factory, "Factory 1");
+        tracker.approveUser(factory);
+
+        vm.prank(producer);
+        tokenId = tracker.createToken('{"nombre": "Trigo"}', 0, 100);
+
+        vm.prank(producer);
+        tracker.createTransfer(tokenId, factory, 40, "");
+        transferId = 1;
+    }
+
+    function test_CannotAcceptExpiredTransfer() public {
+        (uint256 transferId,) = _setupProducerFactoryWithPendingTransfer();
+
+        vm.warp(block.timestamp + tracker.TRANSFER_TIMEOUT() + 1);
+
+        vm.prank(factory);
+        vm.expectRevert("Transferencia expirada");
+        tracker.acceptTransfer(transferId);
+    }
+
+    function test_CannotRejectExpiredTransfer() public {
+        (uint256 transferId,) = _setupProducerFactoryWithPendingTransfer();
+
+        vm.warp(block.timestamp + tracker.TRANSFER_TIMEOUT() + 1);
+
+        vm.prank(factory);
+        vm.expectRevert("Transferencia expirada");
+        tracker.rejectTransfer(transferId);
+    }
+
+    function test_ExpireTransferReturnsBalanceToSender() public {
+        (uint256 transferId, uint256 tokenId) = _setupProducerFactoryWithPendingTransfer();
+
+        assertEq(tracker.getBalance(producer, tokenId), 60, "Balance reservado deberia restar 40");
+        assertTrue(tracker.isTransferExpired(transferId) == false, "Aun no deberia estar expirada");
+
+        vm.warp(block.timestamp + tracker.TRANSFER_TIMEOUT() + 1);
+        assertTrue(tracker.isTransferExpired(transferId), "Deberia estar expirada");
+
+        tracker.expireTransfer(transferId);
+
+        SupplyChainTracker.Transfer memory transfer = tracker.getTransfer(transferId);
+        assertEq(uint256(transfer.status), uint256(SupplyChainTracker.TransferStatus.Expired), "Estado Expired");
+        assertEq(tracker.getBalance(producer, tokenId), 100, "Balance debe devolverse al emisor");
+        assertEq(tracker.getBalance(factory, tokenId), 0, "Receptor no debe recibir balance");
+    }
+
+    function test_CannotExpireBeforeTimeout() public {
+        (uint256 transferId,) = _setupProducerFactoryWithPendingTransfer();
+
+        vm.expectRevert("Transferencia no expirada");
+        tracker.expireTransfer(transferId);
+    }
 }
 

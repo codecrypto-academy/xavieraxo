@@ -26,6 +26,9 @@ export const SUPPLY_CHAIN_TRACKER_ABI = [
   "function createTransfer(uint256 _tokenId, address _to, uint256 _amount, string memory _metadata) external",
   "function acceptTransfer(uint256 _transferId) external",
   "function rejectTransfer(uint256 _transferId) external",
+  "function expireTransfer(uint256 _transferId) external",
+  "function isTransferExpired(uint256 _transferId) external view returns (bool)",
+  "function TRANSFER_TIMEOUT() external view returns (uint256)",
   "function getTransfer(uint256 _transferId) external view returns (tuple(uint256 transferId, uint256 tokenId, address from, address to, uint256 amount, uint8 status, uint256 timestamp, string metadata))",
   
   // Enumeradores (para listar)
@@ -73,6 +76,7 @@ export enum TransferStatus {
   Pending = 0,
   Accepted = 1,
   Rejected = 2,
+  Expired = 3,
 }
 
 // Helpers
@@ -96,5 +100,6 @@ export const TRANSFER_STATUS_NAMES: Record<TransferStatus, string> = {
   [TransferStatus.Pending]: "Pendiente",
   [TransferStatus.Accepted]: "Aceptada",
   [TransferStatus.Rejected]: "Rechazada",
+  [TransferStatus.Expired]: "Expirada",
 };
 

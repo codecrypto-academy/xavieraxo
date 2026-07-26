@@ -30,7 +30,8 @@ contract SupplyChainTracker is ReentrancyGuard, Pausable {
     enum TransferStatus {
         Pending,        // Pendiente
         Accepted,       // Aceptada
-        Rejected        // Rechazada
+        Rejected,       // Rechazada
+        Expired         // Expirada por timeout
     }
 
     // ============ STRUCTS ============
@@ -391,9 +392,10 @@ contract SupplyChainTracker is ReentrancyGuard, Pausable {
         require(transfer.transferId != 0, "Transferencia no existe");
         require(transfer.to == msg.sender, "No eres el receptor");
         require(transfer.status == TransferStatus.Pending, "Transferencia no pendiente");
-        
-        // Validar que no haya expirado (opcional: solo si se implementa timeout)
-        // require(block.timestamp <= transfer.timestamp + TRANSFER_TIMEOUT, "Transferencia expirada");
+        require(
+            block.timestamp <= transfer.timestamp + TRANSFER_TIMEOUT,
+            "Transferencia expirada"
+        );
         
         transfer.status = TransferStatus.Accepted;
         
@@ -418,6 +420,10 @@ contract SupplyChainTracker is ReentrancyGuard, Pausable {
         require(transfer.transferId != 0, "Transferencia no existe");
         require(transfer.to == msg.sender, "No eres el receptor");
         require(transfer.status == TransferStatus.Pending, "Transferencia no pendiente");
+        require(
+            block.timestamp <= transfer.timestamp + TRANSFER_TIMEOUT,
+            "Transferencia expirada"
+        );
         
         transfer.status = TransferStatus.Rejected;
         
@@ -426,6 +432,38 @@ contract SupplyChainTracker is ReentrancyGuard, Pausable {
         
         emit TransferStatusChanged(_transferId, TransferStatus.Rejected);
         emit BalanceUpdated(transfer.from, transfer.tokenId, balances[transfer.from][transfer.tokenId]);
+    }
+
+    /**
+     * @dev Expira una transferencia pendiente y libera el balance reservado al emisor.
+     *      Puede llamarla cualquiera una vez superado TRANSFER_TIMEOUT.
+     * @param _transferId ID de la transferencia
+     */
+    function expireTransfer(uint256 _transferId) external nonReentrant {
+        Transfer storage transfer = transfers[_transferId];
+        require(transfer.transferId != 0, "Transferencia no existe");
+        require(transfer.status == TransferStatus.Pending, "Transferencia no pendiente");
+        require(
+            block.timestamp > transfer.timestamp + TRANSFER_TIMEOUT,
+            "Transferencia no expirada"
+        );
+
+        transfer.status = TransferStatus.Expired;
+        balances[transfer.from][transfer.tokenId] += transfer.amount;
+
+        emit TransferStatusChanged(_transferId, TransferStatus.Expired);
+        emit BalanceUpdated(transfer.from, transfer.tokenId, balances[transfer.from][transfer.tokenId]);
+    }
+
+    /**
+     * @dev Indica si una transferencia pendiente ya superó el timeout.
+     */
+    function isTransferExpired(uint256 _transferId) external view returns (bool) {
+        Transfer storage transfer = transfers[_transferId];
+        if (transfer.transferId == 0 || transfer.status != TransferStatus.Pending) {
+            return false;
+        }
+        return block.timestamp > transfer.timestamp + TRANSFER_TIMEOUT;
     }
     
     /**

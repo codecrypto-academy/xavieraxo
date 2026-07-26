@@ -116,6 +116,25 @@ export const rejectTransfer = async (transferId: number) => {
   return tx.hash;
 };
 
+export const expireTransfer = async (transferId: number) => {
+  const contract = await getContract();
+  const tx = await contract.expireTransfer(transferId);
+  await tx.wait();
+  return tx.hash;
+};
+
+export const isTransferExpired = async (transferId: number) => {
+  const provider = getProvider();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
+  return Boolean(await contract.isTransferExpired(transferId));
+};
+
+export const getTransferTimeout = async () => {
+  const provider = getProvider();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
+  return Number(await contract.TRANSFER_TIMEOUT());
+};
+
 export const getTransfer = async (transferId: number) => {
   const provider = getProvider();
   const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
