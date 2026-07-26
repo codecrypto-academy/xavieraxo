@@ -338,5 +338,193 @@ contract SupplyChainTrackerTest is Test {
         vm.expectRevert("Transferencia no expirada");
         tracker.expireTransfer(transferId);
     }
+
+    // ============ ADMIN / PAUSE / VALIDATION TESTS ============
+
+    function _approveProducer() internal {
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1");
+        tracker.approveUser(producer);
+    }
+
+    function _approveProducerAndFactory() internal {
+        _approveProducer();
+        vm.prank(factory);
+        tracker.registerUser(SupplyChainTracker.UserRole.Factory, "Factory 1");
+        tracker.approveUser(factory);
+    }
+
+    function test_AdminCanCancelApprovedUser() public {
+        _approveProducer();
+
+        tracker.cancelUser(producer);
+
+        (,, SupplyChainTracker.UserStatus status,,) = tracker.users(producer);
+        assertEq(uint256(status), uint256(SupplyChainTracker.UserStatus.Cancelled), "Estado Cancelled");
+    }
+
+    function test_AdminCanCancelPendingUser() public {
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1");
+
+        tracker.cancelUser(producer);
+
+        (,, SupplyChainTracker.UserStatus status,,) = tracker.users(producer);
+        assertEq(uint256(status), uint256(SupplyChainTracker.UserStatus.Cancelled), "Estado Cancelled");
+    }
+
+    function test_CannotCancelRejectedUser() public {
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1");
+        tracker.rejectUser(producer);
+
+        vm.expectRevert("Estado invalido para cancelar");
+        tracker.cancelUser(producer);
+    }
+
+    function test_OnlyAdminCanCancelUser() public {
+        _approveProducer();
+
+        vm.prank(producer);
+        vm.expectRevert("Solo administrador");
+        tracker.cancelUser(producer);
+    }
+
+    function test_PauseBlocksRegisterAndUnpauseRestores() public {
+        tracker.pause();
+        assertTrue(tracker.paused(), "Contrato deberia estar pausado");
+
+        vm.prank(producer);
+        vm.expectRevert();
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1");
+
+        tracker.unpause();
+        assertFalse(tracker.paused(), "Contrato deberia estar activo");
+
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1");
+
+        (,, SupplyChainTracker.UserStatus status,,) = tracker.users(producer);
+        assertEq(uint256(status), uint256(SupplyChainTracker.UserStatus.Pending), "Registro tras unpause");
+    }
+
+    function test_PauseBlocksCreateToken() public {
+        _approveProducer();
+        tracker.pause();
+
+        vm.prank(producer);
+        vm.expectRevert();
+        tracker.createToken('{"nombre": "Trigo"}', 0, 100);
+    }
+
+    function test_OnlyAdminCanPause() public {
+        _approveProducer();
+
+        vm.prank(producer);
+        vm.expectRevert("Solo administrador");
+        tracker.pause();
+    }
+
+    function test_OwnerCanUpdateTokenMetadata() public {
+        _approveProducer();
+
+        vm.prank(producer);
+        uint256 tokenId = tracker.createToken('{"nombre": "Trigo"}', 0, 100);
+
+        vm.prank(producer);
+        tracker.updateTokenMetadata(tokenId, '{"nombre": "Trigo Premium"}');
+
+        SupplyChainTracker.Token memory token = tracker.getToken(tokenId);
+        assertEq(token.metadata, '{"nombre": "Trigo Premium"}', "Metadata actualizada");
+    }
+
+    function test_NonOwnerCannotUpdateTokenMetadata() public {
+        _approveProducerAndFactory();
+
+        vm.prank(producer);
+        uint256 tokenId = tracker.createToken('{"nombre": "Trigo"}', 0, 100);
+
+        vm.prank(factory);
+        vm.expectRevert("No eres el propietario");
+        tracker.updateTokenMetadata(tokenId, '{"nombre": "Hack"}');
+    }
+
+    function test_CannotCreateTokenWithZeroAmount() public {
+        _approveProducer();
+
+        vm.prank(producer);
+        vm.expectRevert("Cantidad debe ser mayor que cero");
+        tracker.createToken('{"nombre": "Trigo"}', 0, 0);
+    }
+
+    function test_CannotCreateTokenWithEmptyMetadata() public {
+        _approveProducer();
+
+        vm.prank(producer);
+        vm.expectRevert("Metadata no puede estar vacia");
+        tracker.createToken("", 0, 10);
+    }
+
+    function test_CannotCreateTokenWithTooLongMetadata() public {
+        _approveProducer();
+
+        bytes memory longBytes = new bytes(tracker.MAX_METADATA_LENGTH() + 1);
+        for (uint256 i = 0; i < longBytes.length; i++) {
+            longBytes[i] = "a";
+        }
+
+        vm.prank(producer);
+        vm.expectRevert("Metadata muy larga");
+        tracker.createToken(string(longBytes), 0, 10);
+    }
+
+    function test_CannotSelfTransfer() public {
+        _approveProducer();
+
+        vm.prank(producer);
+        uint256 tokenId = tracker.createToken('{"nombre": "Trigo"}', 0, 100);
+
+        vm.prank(producer);
+        vm.expectRevert("No puedes transferirte a ti mismo");
+        tracker.createTransfer(tokenId, producer, 10, "");
+    }
+
+    function test_UnapprovedUserCannotCreateToken() public {
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1");
+
+        vm.prank(producer);
+        vm.expectRevert("Usuario no aprobado");
+        tracker.createToken('{"nombre": "Trigo"}', 0, 100);
+    }
+
+    function test_CannotRegisterTwice() public {
+        vm.prank(producer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1");
+
+        vm.prank(producer);
+        vm.expectRevert("Usuario ya registrado");
+        tracker.registerUser(SupplyChainTracker.UserRole.Producer, "Productor 1b");
+    }
+
+    function test_FactoryToRetailerTransferIsValid() public {
+        _approveProducerAndFactory();
+
+        vm.prank(retailer);
+        tracker.registerUser(SupplyChainTracker.UserRole.Retailer, "Retailer 1");
+        tracker.approveUser(retailer);
+
+        vm.prank(factory);
+        uint256 tokenId = tracker.createToken('{"nombre": "Harina"}', 0, 50);
+
+        vm.prank(factory);
+        tracker.createTransfer(tokenId, retailer, 20, "lote-1");
+
+        vm.prank(retailer);
+        tracker.acceptTransfer(1);
+
+        assertEq(tracker.getBalance(retailer, tokenId), 20, "Retailer recibe 20");
+        assertEq(tracker.getBalance(factory, tokenId), 30, "Factory conserva 30");
+    }
 }
 

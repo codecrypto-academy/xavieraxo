@@ -48,9 +48,11 @@ Accion:
 - `SC/test/SupplyChainTracker.t.sol`
 
 Cobertura principal:
-- Registro/aprobacion/rechazo de usuarios
-- Creacion de tokens
-- Transferencias y cambios de estado
+- Registro/aprobacion/rechazo/cancelacion de usuarios
+- Creacion de tokens y update de metadata
+- Transferencias, timeout y cambios de estado
+- Pausa/despausa de emergencia
+- Validaciones de borde (amount 0, auto-transfer, metadata)
 - Flujo completo Productor -> Factoria -> Retailer -> Consumidor
 
 ### 3.4 Configuracion Foundry
