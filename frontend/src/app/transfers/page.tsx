@@ -13,6 +13,8 @@ import {
 } from '@/lib/contractFunctions';
 import { parseContractError } from '@/lib/errors';
 import { TransferStatus, TRANSFER_STATUS_NAMES } from '@/lib/contracts';
+import { DEFAULT_PAGE_SIZE, paginate } from '@/lib/pagination';
+import PaginationControls from '@/components/PaginationControls';
 import Link from 'next/link';
 
 interface TransferData {
@@ -41,6 +43,7 @@ export default function TransfersPage() {
   const [transfers, setTransfers] = useState<TransferData[]>([]);
   const [timeoutSec, setTimeoutSec] = useState<number>(30 * 24 * 60 * 60);
   const [nowSec, setNowSec] = useState(() => Math.floor(Date.now() / 1000));
+  const [historyPage, setHistoryPage] = useState(1);
 
   const loadTransfers = useCallback(async () => {
     setLoadingList(true);
@@ -49,6 +52,7 @@ export default function TransfersPage() {
       setTransfers(all);
       setTimeoutSec(timeout);
       setNowSec(Math.floor(Date.now() / 1000));
+      setHistoryPage(1);
     } catch (err) {
       console.error('Error loading transfers:', err);
       setError('No se pudieron cargar las transferencias');
@@ -190,7 +194,11 @@ export default function TransfersPage() {
       isExpiredPending(t) &&
       (isMine(t.from) || isMine(t.to))
   );
-  const history = transfers.filter((t) => isMine(t.to) || isMine(t.from));
+  const history = transfers
+    .filter((t) => isMine(t.to) || isMine(t.from))
+    .slice()
+    .sort((a, b) => b.transferId - a.transferId);
+  const historyPageData = paginate(history, historyPage, DEFAULT_PAGE_SIZE);
 
   const timeoutDays = Math.round(timeoutSec / (24 * 60 * 60));
 
@@ -444,36 +452,47 @@ export default function TransfersPage() {
           ) : history.length === 0 ? (
             <p className="text-gray-600">Aún no tienes transferencias registradas.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr className="text-left text-xs font-medium text-gray-500 uppercase">
-                    <th className="px-4 py-2">#</th>
-                    <th className="px-4 py-2">Token</th>
-                    <th className="px-4 py-2">De</th>
-                    <th className="px-4 py-2">Para</th>
-                    <th className="px-4 py-2">Cantidad</th>
-                    <th className="px-4 py-2">Estado</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {history.map((t) => (
-                    <tr key={t.transferId}>
-                      <td className="px-4 py-3 text-sm text-gray-800">{t.transferId}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">#{t.tokenId}</td>
-                      <td className="px-4 py-3 text-sm text-gray-500 font-mono">
-                        {isMine(t.from) ? 'Yo' : short(t.from)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-500 font-mono">
-                        {isMine(t.to) ? 'Yo' : short(t.to)}
-                      </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{t.amount}</td>
-                      <td className="px-4 py-3 text-sm">{statusBadge(t)}</td>
+            <>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr className="text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-2">#</th>
+                      <th className="px-4 py-2">Token</th>
+                      <th className="px-4 py-2">De</th>
+                      <th className="px-4 py-2">Para</th>
+                      <th className="px-4 py-2">Cantidad</th>
+                      <th className="px-4 py-2">Estado</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {historyPageData.items.map((t) => (
+                      <tr key={t.transferId}>
+                        <td className="px-4 py-3 text-sm text-gray-800">{t.transferId}</td>
+                        <td className="px-4 py-3 text-sm text-gray-600">#{t.tokenId}</td>
+                        <td className="px-4 py-3 text-sm text-gray-500 font-mono">
+                          {isMine(t.from) ? 'Yo' : short(t.from)}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-500 font-mono">
+                          {isMine(t.to) ? 'Yo' : short(t.to)}
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600">{t.amount}</td>
+                        <td className="px-4 py-3 text-sm">{statusBadge(t)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <PaginationControls
+                page={historyPageData.page}
+                totalPages={historyPageData.totalPages}
+                total={historyPageData.total}
+                pageSize={historyPageData.pageSize}
+                onPageChange={setHistoryPage}
+                disabled={loadingList}
+                label="transferencias"
+              />
+            </>
           )}
         </div>
       </main>

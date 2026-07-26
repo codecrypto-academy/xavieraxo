@@ -14,6 +14,8 @@ import {
 } from '@/lib/contractFunctions';
 import { UserRole, UserStatus, STATUS_NAMES, ROLE_NAMES } from '@/lib/contracts';
 import { parseContractError } from '@/lib/errors';
+import { DEFAULT_PAGE_SIZE, paginate } from '@/lib/pagination';
+import PaginationControls from '@/components/PaginationControls';
 import Link from 'next/link';
 
 interface UserData {
@@ -35,6 +37,7 @@ export default function AdminPage() {
   const [pausing, setPausing] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+  const [usersPage, setUsersPage] = useState(1);
 
   const loadPaused = useCallback(async () => {
     try {
@@ -49,6 +52,7 @@ export default function AdminPage() {
     try {
       const allUsers = await getAllUsers();
       setUsers(allUsers);
+      setUsersPage(1);
     } catch (err) {
       console.error('Error loading users:', err);
       setError('No se pudieron cargar los usuarios');
@@ -192,6 +196,7 @@ export default function AdminPage() {
 
   const pendingUsers = users.filter((u) => u.status === UserStatus.Pending);
   const otherUsers = users.filter((u) => u.status !== UserStatus.Pending);
+  const usersPageData = paginate(users, usersPage, DEFAULT_PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -319,47 +324,58 @@ export default function AdminPage() {
           ) : otherUsers.length === 0 && pendingUsers.length === 0 ? (
             <p className="text-gray-600">No hay usuarios registrados.</p>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead>
-                  <tr className="text-left text-xs font-medium text-gray-500 uppercase">
-                    <th className="px-4 py-2">Nombre</th>
-                    <th className="px-4 py-2">Dirección</th>
-                    <th className="px-4 py-2">Rol</th>
-                    <th className="px-4 py-2">Estado</th>
-                    <th className="px-4 py-2">Acciones</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {users.map((user) => {
-                    const canCancel =
-                      user.role !== UserRole.Admin &&
-                      (user.status === UserStatus.Approved || user.status === UserStatus.Pending);
-                    return (
-                      <tr key={user.userAddress}>
-                        <td className="px-4 py-3 text-sm text-gray-800">{user.name}</td>
-                        <td className="px-4 py-3 text-sm text-gray-500 font-mono">{user.userAddress}</td>
-                        <td className="px-4 py-3 text-sm text-gray-600">{ROLE_NAMES[user.role as UserRole]}</td>
-                        <td className="px-4 py-3 text-sm">{statusBadge(user.status)}</td>
-                        <td className="px-4 py-3 text-sm">
-                          {canCancel ? (
-                            <button
-                              onClick={() => handleCancel(user.userAddress)}
-                              disabled={actionAddress === user.userAddress}
-                              className="bg-gray-700 hover:bg-gray-800 disabled:bg-gray-400 text-white font-medium py-1.5 px-3 rounded-lg text-xs"
-                            >
-                              {actionAddress === user.userAddress ? '...' : 'Cancelar'}
-                            </button>
-                          ) : (
-                            <span className="text-gray-400 text-xs">—</span>
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+            <>
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead>
+                    <tr className="text-left text-xs font-medium text-gray-500 uppercase">
+                      <th className="px-4 py-2">Nombre</th>
+                      <th className="px-4 py-2">Dirección</th>
+                      <th className="px-4 py-2">Rol</th>
+                      <th className="px-4 py-2">Estado</th>
+                      <th className="px-4 py-2">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {usersPageData.items.map((user) => {
+                      const canCancel =
+                        user.role !== UserRole.Admin &&
+                        (user.status === UserStatus.Approved || user.status === UserStatus.Pending);
+                      return (
+                        <tr key={user.userAddress}>
+                          <td className="px-4 py-3 text-sm text-gray-800">{user.name}</td>
+                          <td className="px-4 py-3 text-sm text-gray-500 font-mono">{user.userAddress}</td>
+                          <td className="px-4 py-3 text-sm text-gray-600">{ROLE_NAMES[user.role as UserRole]}</td>
+                          <td className="px-4 py-3 text-sm">{statusBadge(user.status)}</td>
+                          <td className="px-4 py-3 text-sm">
+                            {canCancel ? (
+                              <button
+                                onClick={() => handleCancel(user.userAddress)}
+                                disabled={actionAddress === user.userAddress}
+                                className="bg-gray-700 hover:bg-gray-800 disabled:bg-gray-400 text-white font-medium py-1.5 px-3 rounded-lg text-xs"
+                              >
+                                {actionAddress === user.userAddress ? '...' : 'Cancelar'}
+                              </button>
+                            ) : (
+                              <span className="text-gray-400 text-xs">—</span>
+                            )}
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+              <PaginationControls
+                page={usersPageData.page}
+                totalPages={usersPageData.totalPages}
+                total={usersPageData.total}
+                pageSize={usersPageData.pageSize}
+                onPageChange={setUsersPage}
+                disabled={loadingUsers}
+                label="usuarios"
+              />
+            </>
           )}
         </div>
       </main>

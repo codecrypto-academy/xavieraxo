@@ -228,7 +228,7 @@ Seguridad del contrato: [EXPLICACION_DEL_PROYECTO.md](EXPLICACION_DEL_PROYECTO.m
 ## 11. Limitaciones conocidas (MVP académico)
 
 - Ejecución pensada para red local (Anvil); opcionalmente Sepolia vía `DEPLOY_SEPOLIA.md`
-- Listados on-chain sin indexer externo (suficiente para demo; escala limitada)
+- Listados on-chain sin indexer externo; tablas largas paginadas en UI (suficiente para demo)
 - `Token.owner` pasa al receptor solo cuando el emisor queda con balance 0; con saldos compartidos cualquier titular con balance puede editar metadata
 - Timeout de 30 días: en demo real suele mostrarse con `vm.warp` en tests
 

@@ -13,6 +13,8 @@ import {
 } from '@/lib/contractFunctions';
 import { TRANSFER_STATUS_NAMES, TransferStatus } from '@/lib/contracts';
 import { parseContractError } from '@/lib/errors';
+import { DEFAULT_PAGE_SIZE, paginate } from '@/lib/pagination';
+import PaginationControls from '@/components/PaginationControls';
 
 interface TokenInfo {
   tokenId: number;
@@ -65,6 +67,7 @@ function TraceabilityContent() {
   const [tokenTotal, setTokenTotal] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [transfersPage, setTransfersPage] = useState(1);
 
   const loadTrace = useCallback(async (tokenId: number) => {
     setLoading(true);
@@ -86,6 +89,7 @@ function TraceabilityContent() {
       setLineage(lineageData);
       setChildren(childrenData);
       setTransfers(transfersData);
+      setTransfersPage(1);
       setTokenTotal(total);
     } catch (err: any) {
       console.error(err);
@@ -119,6 +123,8 @@ function TraceabilityContent() {
     }
     await loadTrace(id);
   };
+
+  const transfersPageData = paginate(transfers, transfersPage, DEFAULT_PAGE_SIZE);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
@@ -291,44 +297,55 @@ function TraceabilityContent() {
               {transfers.length === 0 ? (
                 <p className="text-gray-600">No hay transferencias para este token.</p>
               ) : (
-                <div className="overflow-x-auto">
-                  <table className="min-w-full text-sm">
-                    <thead>
-                      <tr className="text-left text-gray-600 border-b">
-                        <th className="py-2 pr-4">ID</th>
-                        <th className="py-2 pr-4">De</th>
-                        <th className="py-2 pr-4">A</th>
-                        <th className="py-2 pr-4">Cant.</th>
-                        <th className="py-2 pr-4">Estado</th>
-                        <th className="py-2">Fecha</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {transfers.map((t) => (
-                        <tr key={t.transferId} className="border-b border-gray-100">
-                          <td className="py-2 pr-4 font-medium">#{t.transferId}</td>
-                          <td className="py-2 pr-4 font-mono text-xs">{shortAddress(t.from)}</td>
-                          <td className="py-2 pr-4 font-mono text-xs">{shortAddress(t.to)}</td>
-                          <td className="py-2 pr-4">{t.amount}</td>
-                          <td className="py-2 pr-4">
-                            <span
-                              className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                                t.status === TransferStatus.Accepted
-                                  ? 'bg-green-100 text-green-800'
-                                  : t.status === TransferStatus.Pending
-                                    ? 'bg-yellow-100 text-yellow-800'
-                                    : 'bg-red-100 text-red-800'
-                              }`}
-                            >
-                              {TRANSFER_STATUS_NAMES[t.status as TransferStatus] || t.status}
-                            </span>
-                          </td>
-                          <td className="py-2 text-gray-600">{formatDate(t.timestamp)}</td>
+                <>
+                  <div className="overflow-x-auto">
+                    <table className="min-w-full text-sm">
+                      <thead>
+                        <tr className="text-left text-gray-600 border-b">
+                          <th className="py-2 pr-4">ID</th>
+                          <th className="py-2 pr-4">De</th>
+                          <th className="py-2 pr-4">A</th>
+                          <th className="py-2 pr-4">Cant.</th>
+                          <th className="py-2 pr-4">Estado</th>
+                          <th className="py-2">Fecha</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
+                      </thead>
+                      <tbody>
+                        {transfersPageData.items.map((t) => (
+                          <tr key={t.transferId} className="border-b border-gray-100">
+                            <td className="py-2 pr-4 font-medium">#{t.transferId}</td>
+                            <td className="py-2 pr-4 font-mono text-xs">{shortAddress(t.from)}</td>
+                            <td className="py-2 pr-4 font-mono text-xs">{shortAddress(t.to)}</td>
+                            <td className="py-2 pr-4">{t.amount}</td>
+                            <td className="py-2 pr-4">
+                              <span
+                                className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
+                                  t.status === TransferStatus.Accepted
+                                    ? 'bg-green-100 text-green-800'
+                                    : t.status === TransferStatus.Pending
+                                      ? 'bg-yellow-100 text-yellow-800'
+                                      : 'bg-red-100 text-red-800'
+                                }`}
+                              >
+                                {TRANSFER_STATUS_NAMES[t.status as TransferStatus] || t.status}
+                              </span>
+                            </td>
+                            <td className="py-2 text-gray-600">{formatDate(t.timestamp)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                  <PaginationControls
+                    page={transfersPageData.page}
+                    totalPages={transfersPageData.totalPages}
+                    total={transfersPageData.total}
+                    pageSize={transfersPageData.pageSize}
+                    onPageChange={setTransfersPage}
+                    disabled={loading}
+                    label="transferencias"
+                  />
+                </>
               )}
             </section>
           </div>

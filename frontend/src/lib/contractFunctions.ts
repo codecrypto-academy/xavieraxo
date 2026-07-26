@@ -1,5 +1,6 @@
 import { ethers } from 'ethers';
 import { CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI } from './contracts';
+import { DEFAULT_PAGE_SIZE, idRangeForPage } from './pagination';
 
 // Obtener provider y signer
 const getProvider = () => {
@@ -239,6 +240,61 @@ export const getAllTransfers = async () => {
     });
   }
   return transfers;
+};
+
+/** Página de transferencias on-chain (IDs más recientes primero). */
+export const getTransfersPage = async (
+  page: number = 1,
+  pageSize: number = DEFAULT_PAGE_SIZE
+) => {
+  const provider = getProvider();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
+  const total = Number(await contract.transferCounter());
+  const { start, end, totalPages, page: safePage } = idRangeForPage(total, page, pageSize);
+
+  const items = [];
+  for (let i = end; i >= start && start > 0; i--) {
+    const transfer = await contract.getTransfer(i);
+    items.push({
+      transferId: Number(transfer.transferId),
+      tokenId: Number(transfer.tokenId),
+      from: transfer.from,
+      to: transfer.to,
+      amount: Number(transfer.amount),
+      status: Number(transfer.status),
+      timestamp: Number(transfer.timestamp),
+      metadata: transfer.metadata,
+    });
+  }
+
+  return { items, total, page: safePage, pageSize, totalPages };
+};
+
+/** Página de tokens on-chain (IDs más recientes primero). */
+export const getTokensPage = async (
+  page: number = 1,
+  pageSize: number = DEFAULT_PAGE_SIZE
+) => {
+  const provider = getProvider();
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, SUPPLY_CHAIN_TRACKER_ABI, provider);
+  const total = Number(await contract.tokenCounter());
+  const { start, end, totalPages, page: safePage } = idRangeForPage(total, page, pageSize);
+
+  const items = [];
+  for (let i = end; i >= start && start > 0; i--) {
+    const token = await contract.getToken(i);
+    items.push({
+      tokenId: Number(token.tokenId),
+      owner: token.owner,
+      metadata: token.metadata,
+      parentTokenId: Number(token.parentTokenId),
+      isRawMaterial: token.isRawMaterial,
+      creationTime: Number(token.creationTime),
+      creator: token.creator,
+    });
+  }
+
+  return { items, total, page: safePage, pageSize, totalPages };
 };
 
 /** Cadena de ancestros desde la materia prima hasta el token (incluye el token). */

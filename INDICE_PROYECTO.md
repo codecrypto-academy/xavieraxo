@@ -179,7 +179,9 @@ Guia: `DEPLOY_SEPOLIA.md`.
 - El contrato usa `ReentrancyGuard` y `Pausable` (OpenZeppelin).
 - Hay limite de longitud para metadata en contrato.
 - La vista `/traceability` usa listados on-chain (`getAllTokens` / transferencias) para linaje e historial.
-- En volumen alto convendria paginar o indexar eventos off-chain.
+- Las tablas largas (historial de transferencias, trazabilidad y usuarios admin) se paginan en UI (10 por pagina).
+- Existen helpers `getTransfersPage` / `getTokensPage` para lectura por rangos de ID.
+- En volumen muy alto convendria indexar eventos off-chain.
 
 ## 9) Punto de entrada recomendado para lectura de codigo
 
