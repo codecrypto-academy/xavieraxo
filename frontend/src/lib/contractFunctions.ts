@@ -215,6 +215,37 @@ export const getAllTransfers = async () => {
   return transfers;
 };
 
+/** Cadena de ancestros desde la materia prima hasta el token (incluye el token). */
+export const getTokenLineage = async (tokenId: number) => {
+  const lineage = [];
+  let currentId = tokenId;
+  const seen = new Set<number>();
+
+  while (currentId > 0 && !seen.has(currentId)) {
+    seen.add(currentId);
+    const token = await getToken(currentId);
+    if (!token.tokenId) break;
+    lineage.unshift(token);
+    currentId = token.parentTokenId;
+  }
+
+  return lineage;
+};
+
+/** Tokens que tienen a tokenId como padre directo. */
+export const getTokenChildren = async (tokenId: number) => {
+  const all = await getAllTokens();
+  return all.filter((t) => t.parentTokenId === tokenId);
+};
+
+/** Transferencias asociadas a un token (orden cronológico). */
+export const getTokenTransfers = async (tokenId: number) => {
+  const all = await getAllTransfers();
+  return all
+    .filter((t) => t.tokenId === tokenId)
+    .sort((a, b) => a.timestamp - b.timestamp);
+};
+
 // Tokens con balance de un usuario (recorre todos los tokens y filtra por balance > 0)
 export const getUserTokens = async (userAddress: string) => {
   const provider = getProvider();

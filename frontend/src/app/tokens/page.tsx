@@ -279,14 +279,22 @@ export default function TokensPage() {
                     <p className="text-xs text-gray-500 mt-1">Deriva del token #{token.parentTokenId}</p>
                   )}
 
-                  {isOwner(token.owner) && editingTokenId !== token.tokenId && (
-                    <button
-                      onClick={() => startEdit(token.tokenId, token.metadata)}
-                      className="mt-3 text-blue-600 hover:text-blue-700 text-sm font-medium"
+                  <div className="mt-3 flex flex-wrap items-center gap-3">
+                    <Link
+                      href={`/traceability?tokenId=${token.tokenId}`}
+                      className="text-blue-600 hover:text-blue-700 text-sm font-medium"
                     >
-                      Editar metadata
-                    </button>
-                  )}
+                      Ver trazabilidad →
+                    </Link>
+                    {isOwner(token.owner) && editingTokenId !== token.tokenId && (
+                      <button
+                        onClick={() => startEdit(token.tokenId, token.metadata)}
+                        className="text-blue-600 hover:text-blue-700 text-sm font-medium"
+                      >
+                        Editar metadata
+                      </button>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>

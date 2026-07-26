@@ -66,6 +66,7 @@ Monta:
 - `frontend/src/app/dashboard/page.tsx`: resumen y accesos rapidos
 - `frontend/src/app/tokens/page.tsx`: crear/listar/editar metadata de tokens
 - `frontend/src/app/transfers/page.tsx`: crear/aceptar/rechazar transferencias
+- `frontend/src/app/traceability/page.tsx`: linaje e historial de transferencias por token
 - `frontend/src/app/profile/page.tsx`: perfil y portafolio
 - `frontend/src/app/admin/page.tsx`: aprobaciones y pausa de contrato
 

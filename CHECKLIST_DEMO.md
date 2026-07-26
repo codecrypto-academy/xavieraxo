@@ -75,6 +75,7 @@ Para cuentas #1 y #2:
 - [ ] Metadata: {"nombre":"Cafe Tostado","lote":"A1"}
 - [ ] Supply: 40
 - [ ] Verificar en Tokens el texto "Deriva del token #N"
+- [ ] Abrir Trazabilidad (o link "Ver trazabilidad") y confirmar linaje + derivados
 
 ### 7) Cierre rapido (1 min)
 
@@ -104,6 +105,7 @@ Al terminar debes poder mostrar:
 3. Al menos una transferencia aceptada entre roles
 4. (Ideal) un token derivado con parent distinto de 0
 5. Historial visible en Transfers / Profile
+6. Vista /traceability mostrando linaje y transferencias del token
 
 ## Si algo falla
 

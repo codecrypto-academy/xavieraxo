@@ -157,6 +157,11 @@ export default function Home() {
               <p className="text-gray-600">Ver y gestionar transferencias</p>
             </Link>
 
+            <Link href="/traceability" className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
+              <h2 className="text-xl font-semibold mb-2 text-gray-800">Trazabilidad</h2>
+              <p className="text-gray-600">Linaje e historial de un token</p>
+            </Link>
+
             <Link href="/admin" className="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition">
               <h2 className="text-xl font-semibold mb-2 text-gray-800">Panel Admin</h2>
               <p className="text-gray-600">Gestionar usuarios (solo admin)</p>

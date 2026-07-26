@@ -136,6 +136,13 @@ export default function DashboardPage() {
               <h3 className="font-semibold text-gray-800">Transferir Token</h3>
               <p className="text-sm text-gray-600">Transferir tokens a otro usuario</p>
             </Link>
+            <Link
+              href="/traceability"
+              className="p-4 border border-gray-200 rounded-lg hover:bg-blue-50 transition"
+            >
+              <h3 className="font-semibold text-gray-800">Trazabilidad</h3>
+              <p className="text-sm text-gray-600">Ver linaje e historial de un token</p>
+            </Link>
             {userRole === UserRole.Admin && (
               <Link
                 href="/admin"
