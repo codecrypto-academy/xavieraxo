@@ -7,10 +7,12 @@ Fecha de ejecucion registrada: **2026-07-25** (rama base `entrega-proyecto-final
 
 | Tipo | Que cubre | Como |
 |------|-----------|------|
-| Automatizado | Contrato + build frontend | `scripts/verify.ps1` |
+| Automatizado | Contrato + unit frontend + build | `scripts/verify.ps1` |
+| Smoke UI | Rutas clave sin MetaMask | `scripts/e2e-frontend.ps1` |
 | Manual (demo) | Flujo MetaMask real | [CHECKLIST_DEMO.md](CHECKLIST_DEMO.md) |
 
 La parte con wallet (MetaMask + Anvil) no se automatiza aqui: requiere navegador e interaccion humana.
+Los smoke de Playwright validan que las paginas renderizan (home, registro, trazabilidad, etc.) sin wallet.
 
 ---
 
@@ -34,8 +36,25 @@ forge test
 # Frontend
 cd ../frontend
 npx tsc --noEmit
+npm run test:unit
 npm run build
 ```
+
+### Smoke E2E frontend (Playwright)
+
+Primera vez:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/e2e-frontend.ps1 -InstallBrowsers
+```
+
+Corridas siguientes:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/e2e-frontend.ps1
+```
+
+Equivale a `npm run build` + `npm run test:e2e` en `frontend/` (ademas de `test:unit`).
 
 ### Resultado registrado (2026-07-25)
 
@@ -96,8 +115,9 @@ Usar [CHECKLIST_DEMO.md](CHECKLIST_DEMO.md) con este orden minimo:
 El proyecto se considera verificado para entrega academica local si:
 
 1. `scripts/verify.ps1` termina en OK
-2. El checklist de demo se completa al menos hasta transferencia aceptada
-3. La address del contrato esta sincronizada (`frontend/.env.local`)
+2. (Opcional recomendado) `scripts/e2e-frontend.ps1` termina en OK
+3. El checklist de demo se completa al menos hasta transferencia aceptada
+4. La address del contrato esta sincronizada (`frontend/.env.local`)
 
 ---
 
@@ -107,6 +127,8 @@ El proyecto se considera verificado para entrega academica local si:
 |-------|--------|
 | `forge test` falla | Revisar `SC/test/SupplyChainTracker.t.sol` y dependencias (`forge install`) |
 | `tsc` / `build` falla | Revisar errores TypeScript en `frontend/src` |
+| `test:unit` falla | Revisar `frontend/src/lib/pagination.ts` |
+| Playwright e2e falla | `npx playwright install chromium` y `npm run build` previo |
 | MetaMask no conecta | Anvil activo + red 31337 ([EJECUTAR_PROYECTO.md](EJECUTAR_PROYECTO.md)) |
 | Tx revierten | Redeploy + `node scripts/sync-contract-address.mjs` y reiniciar `npm run dev` |
 

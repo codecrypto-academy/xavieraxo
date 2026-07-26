@@ -154,7 +154,12 @@ powershell -ExecutionPolicy Bypass -File scripts/verify.ps1
 
 Detalle y resultados: `VERIFICACION_E2E.md`.
 
-### 6.6 Deploy Sepolia (testnet)
+### 6.6 Smoke E2E frontend
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/e2e-frontend.ps1 -InstallBrowsers
+```
+
+### 6.7 Deploy Sepolia (testnet)
 ```powershell
 $env:SEPOLIA_RPC_URL="https://..."
 $env:SEPOLIA_PRIVATE_KEY="0x..."

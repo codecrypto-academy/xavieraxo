@@ -79,6 +79,9 @@ export default function AdminPage() {
   useEffect(() => {
     if (account) {
       checkAdminAccess();
+    } else {
+      setLoading(false);
+      setUserRole(null);
     }
   }, [account, checkAdminAccess]);
 

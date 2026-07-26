@@ -54,6 +54,10 @@ export default function DashboardPage() {
   useEffect(() => {
     if (account) {
       loadUserData();
+    } else {
+      setLoading(false);
+      setUserRole(null);
+      setUserName('');
     }
   }, [account, loadUserData]);
 

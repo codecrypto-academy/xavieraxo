@@ -45,6 +45,10 @@ export default function ProfilePage() {
   useEffect(() => {
     if (account) {
       loadUserData();
+    } else {
+      setLoading(false);
+      setUserData(null);
+      setTokens([]);
     }
   }, [account, loadUserData]);
 

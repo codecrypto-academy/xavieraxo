@@ -33,6 +33,10 @@ try {
   npx tsc --noEmit
   if ($LASTEXITCODE -ne 0) { $Failed = $true }
 
+  Write-Step "npm run test:unit"
+  npm run test:unit
+  if ($LASTEXITCODE -ne 0) { $Failed = $true }
+
   Write-Step "npm run build"
   npm run build
   if ($LASTEXITCODE -ne 0) { $Failed = $true }
@@ -48,5 +52,5 @@ if ($Failed) {
 }
 
 Write-Host "RESULTADO: OK" -ForegroundColor Green
-Write-Host "Siguiente: checklist manual en CHECKLIST_DEMO.md / VERIFICACION_E2E.md"
+Write-Host "Siguiente: smoke UI con scripts/e2e-frontend.ps1 (o checklist manual)"
 exit 0
