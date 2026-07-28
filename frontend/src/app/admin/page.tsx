@@ -15,6 +15,7 @@ import {
 import { UserRole, UserStatus, STATUS_NAMES, ROLE_NAMES } from '@/lib/contracts';
 import { parseContractError } from '@/lib/errors';
 import { DEFAULT_PAGE_SIZE, paginate } from '@/lib/pagination';
+import { DEMO_UI } from '@/lib/demo';
 import PaginationControls from '@/components/PaginationControls';
 import Link from 'next/link';
 
@@ -165,7 +166,7 @@ export default function AdminPage() {
     );
   };
 
-  if (loading && userRole === null) {
+  if (loading && userRole === null && !DEMO_UI) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
@@ -176,7 +177,7 @@ export default function AdminPage() {
     );
   }
 
-  if (userRole !== UserRole.Admin) {
+  if (userRole !== UserRole.Admin && !DEMO_UI) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
         <div className="max-w-md w-full bg-white rounded-lg shadow-xl p-8">

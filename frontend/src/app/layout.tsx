@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google';
 import '../styles/globals.css';
 import { Web3Provider } from '@/context/Web3Context';
 import NetworkBanner from '@/components/NetworkBanner';
+import DemoBanner from '@/components/DemoBanner';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -20,6 +21,7 @@ export default function RootLayout({
     <html lang="es">
       <body className={inter.className}>
         <Web3Provider>
+          <DemoBanner />
           <NetworkBanner />
           {children}
         </Web3Provider>

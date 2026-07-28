@@ -1,10 +1,12 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('Smoke frontend (sin wallet)', () => {
-  test('home muestra marca y CTA de MetaMask', async ({ page }) => {
+  test('home muestra marca y acceso (wallet o modo capturas)', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByRole('heading', { name: 'Supply Chain Tracker' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Conectar MetaMask' })).toBeVisible();
+    await expect(page.getByText('Supply Chain Tracker').first()).toBeVisible();
+    const connect = page.getByRole('button', { name: 'Conectar MetaMask' });
+    const dashboardCard = page.getByRole('heading', { name: 'Dashboard', exact: true });
+    await expect(connect.or(dashboardCard)).toBeVisible();
   });
 
   test('registro renderiza formulario', async ({ page }) => {
@@ -39,11 +41,11 @@ test.describe('Smoke frontend (sin wallet)', () => {
     });
   });
 
-  test('admin sin cuenta muestra acceso denegado', async ({ page }) => {
+  test('admin sin cuenta: denegado o panel en modo capturas', async ({ page }) => {
     await page.goto('/admin');
-    await expect(page.getByRole('heading', { name: 'Acceso Denegado' })).toBeVisible({
-      timeout: 15_000,
-    });
+    const denied = page.getByRole('heading', { name: 'Acceso Denegado' });
+    const adminTitle = page.getByRole('heading', { name: 'Panel de Administración' });
+    await expect(denied.or(adminTitle)).toBeVisible({ timeout: 15_000 });
   });
 
   test('perfil no queda colgado sin cuenta', async ({ page }) => {
