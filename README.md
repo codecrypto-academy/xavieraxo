@@ -92,11 +92,7 @@ Ver carpeta [screenshots/](screenshots/).
 
 ## Video demostración
 
-🎥 *Pendiente:* pega aquí el enlace de Loom/YouTube cuando lo grabes.
-
-```markdown
-🎥 [Ver demostración](https://www.loom.com/share/TU_ENLACE)
-```
+🎥 [Ver demostración completa en Loom](https://www.loom.com/share/c30d1e405cda47cd877ba46b9ad1925b)
 
 ## Innovaciones implementadas (respecto al esqueleto base)
 
