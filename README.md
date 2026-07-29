@@ -1,107 +1,140 @@
-# Plataforma de Trazabilidad Logística Basada en Blockchain
-
-MVP de trazabilidad logística para monitorizar productos, envíos y mercancías a lo largo de toda la cadena de distribución, desde su origen hasta el destino final, garantizando transparencia y verificabilidad on-chain.
-
-Los Smart Contracts están en Solidity (Foundry) y la interfaz web descentralizada (DApp) en Next.js.
-
-> **Categoría del proyecto:** Plataforma de Trazabilidad Logística para Envíos y Cadena de Suministro (blockchain EVM).
+# Supply Chain Tracker — TFM / Proyecto Final
 
 ## Descripción
 
-El sistema modela la cadena de suministro como una secuencia de actores con roles definidos. Cada producto o mercancía se representa como un token con metadata (JSON), y cada movimiento entre actores queda registrado como una transferencia verificable en la blockchain. Así se puede rastrear el recorrido completo de un producto y auditar cada paso.
+MVP de **trazabilidad logística on-chain** para monitorizar productos, envíos y mercancías a lo largo de la cadena de suministro (origen → destino), con transparencia y verificabilidad en blockchain EVM.
 
-### Características
+Los smart contracts están en **Solidity (Foundry)** y la DApp en **Next.js + MetaMask + ethers.js**.
 
-- Gestión de roles: Productor, Factoría, Distribuidor, Consumidor y Administrador
-- Registro y aprobación de usuarios por el administrador
-- Tokens que representan materias primas, productos o mercancías en tránsito
-- Trazabilidad por parentesco entre tokens (origen → destino)
-- Transferencias controladas por rol con aceptación del receptor
-- Eventos en blockchain para auditoría y verificabilidad
-- Panel de administración y listados de tokens y transferencias en la DApp
+## Problema que resuelve
 
-## Estructura del proyecto
+En cadenas de suministro tradicionales es difícil auditar el recorrido real de un producto: los registros suelen estar fragmentados, ser modificables off-chain y poco transparentes entre actores. Este proyecto concentra identidad (roles), tokens de mercancía, transferencias con aceptación y linaje de productos en un contrato inteligente consultable desde una DApp.
 
-```
-├── SC/                      # Smart Contracts (Foundry)
-│   ├── src/
-│   ├── test/
-│   └── script/
-├── frontend/                # DApp (Next.js + TypeScript)
-│   └── src/
-├── scripts/                 # Deploy local, sync address, verify
-├── README.md
-├── INDICE_PROYECTO.md
-├── EJECUTAR_PROYECTO.md
-├── CHECKLIST_DEMO.md
-├── VERIFICACION_E2E.md
-├── DOCUMENTO_ENTREGA.md
-├── DEPLOY_SEPOLIA.md
-├── CONFIGURACION_METAMASK.md
-├── GUIA_RAPIDA_METAMASK.md
-└── EXPLICACION_DEL_PROYECTO.md
+## Tecnologías utilizadas
+
+- **Blockchain:** Ethereum-compatible (Anvil local / Sepolia testnet)
+- **Smart Contracts:** Solidity 0.8.24, Foundry, OpenZeppelin (ReentrancyGuard, Pausable)
+- **Frontend:** Next.js 14, TypeScript, Tailwind CSS, Ethers.js v6
+- **Wallet:** MetaMask
+- **IA / herramientas:** Cursor (asistencia de desarrollo y documentación)
+
+## Arquitectura del sistema
+
+Ver diagramas Mermaid en [docs/diagramas.md](docs/diagramas.md).
+
+```text
+Usuario + MetaMask → Frontend Next.js → RPC (Anvil/Sepolia) → SupplyChainTracker.sol
 ```
 
-La raiz del repositorio es este proyecto (`SC/` + `frontend/` + `scripts/` + docs). No hay carpeta `solidity/` separada.
+## Instalación y configuración
 
-## Requisitos
+### Requisitos previos
 
 - Node.js 18+
-- Foundry (forge, anvil)
-- MetaMask en el navegador
+- Foundry (`forge`, `anvil`)
+- MetaMask
 
-## Inicio rápido
-
-Sigue la guía detallada en [EJECUTAR_PROYECTO.md](EJECUTAR_PROYECTO.md).
+### Instalación
 
 ```powershell
-# 1. Dependencias del contrato
 cd SC
 forge install
 forge build
-forge test
 
-# 2. Blockchain local (terminal aparte)
-anvil
-
-# 3. Desplegar contrato + sync address
-powershell -ExecutionPolicy Bypass -File scripts/deploy-local.ps1
-
-# 4. Frontend
-cd frontend
+cd ..\frontend
 npm install
-npm run dev
 ```
 
-Abre http://localhost:3000 y conecta MetaMask a la red Localhost 8545 (Chain ID 31337).
+### Configuración
 
-## Demo sugerida
+1. Arrancar Anvil: `anvil`
+2. Deploy + sync address:
+   ```powershell
+   powershell -ExecutionPolicy Bypass -File scripts\deploy-local.ps1
+   ```
+3. Frontend:
+   ```powershell
+   cd frontend
+   npm run dev
+   ```
+4. Abrir http://localhost:3000 y conectar MetaMask a **Localhost 8545** (Chain ID `31337`).
 
-Checklist minuto a minuto (5-10 min): [CHECKLIST_DEMO.md](CHECKLIST_DEMO.md)
+Guía detallada: [EJECUTAR_PROYECTO.md](EJECUTAR_PROYECTO.md) · MetaMask: [GUIA_RAPIDA_METAMASK.md](GUIA_RAPIDA_METAMASK.md)
 
-1. Conectar con la cuenta admin de Anvil (ya registrada automáticamente).
-2. Importar otra cuenta y registrarla como Productor.
-3. Volver al admin y aprobar al usuario.
-4. Crear un token como productor y transferirlo siguiendo la cadena de suministro.
-5. Aceptar la transferencia desde la cuenta receptora.
+### Deploy Sepolia (opcional)
 
-## Tecnologías
+Ver [DEPLOY_SEPOLIA.md](DEPLOY_SEPOLIA.md).
 
-- **Smart Contracts:** Solidity 0.8.24, Foundry, OpenZeppelin
-- **Frontend:** Next.js 14, TypeScript, Tailwind CSS, Ethers.js
+## Smart contracts desplegados
+
+| Red | Chain ID | Notas |
+|-----|----------|--------|
+| Anvil (local) | 31337 | Address en `frontend/.env.local` tras `deploy-local.ps1` |
+| Sepolia | 11155111 | Tras `scripts/deploy-sepolia.ps1` + sync |
+
+Contrato principal: `SC/src/SupplyChainTracker.sol`
+
+## Casos de uso
+
+1. Registro y aprobación de actores (Productor, Factoría, Retailer, Consumidor)
+2. Creación de tokens (materia prima / producto con metadata JSON)
+3. Transferencias con aceptación / rechazo / cancelación / expiración
+4. Consulta de trazabilidad (linaje + historial)
+5. Administración (aprobaciones, pausa de emergencia)
+
+## Capturas de pantalla
+
+Ver carpeta [screenshots/](screenshots/).
+
+## Diagramas técnicos
+
+[docs/diagramas.md](docs/diagramas.md)
+
+## Video demostración
+
+🎥 *Pendiente:* pega aquí el enlace de Loom/YouTube cuando lo grabes.
+
+```markdown
+🎥 [Ver demostración](https://www.loom.com/share/TU_ENLACE)
+```
+
+## Innovaciones implementadas (respecto al esqueleto base)
+
+- Timeout y expiración de transferencias pendientes
+- Cancelación de transferencia por el emisor
+- Re-registro tras rechazo/cancelación
+- Vista de trazabilidad (linaje + historial)
+- Paginación de listados en UI
+- Alineación owner/balance en transferencias parciales
+- Restricción de materia prima al rol Productor
+- Script de deploy Sepolia + soporte multi-red en frontend
+- Smoke E2E Playwright + tests de contrato (~41) y verify automatizado
+- Modo capturas opcional (`NEXT_PUBLIC_DEMO_UI`, OFF por defecto)
+
+## Uso de herramientas de IA
+
+Desarrollo asistido con **Cursor** para implementación de features, tests, documentación de entrega y scripts de verificación. El código y la lógica de negocio fueron revisados y ejecutados localmente (forge test, build, demo MetaMask).
+
+## Verificación
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\verify.ps1
+powershell -ExecutionPolicy Bypass -File scripts\e2e-frontend.ps1
+```
+
+Detalle: [VERIFICACION_E2E.md](VERIFICACION_E2E.md) · Demo: [CHECKLIST_DEMO.md](CHECKLIST_DEMO.md)
 
 ## Documentación adicional
 
-- [DOCUMENTO_ENTREGA.md](DOCUMENTO_ENTREGA.md) — Documento de entrega / defensa
-- [DEPLOY_SEPOLIA.md](DEPLOY_SEPOLIA.md) — Deploy en testnet Sepolia
-- [CHECKLIST_DEMO.md](CHECKLIST_DEMO.md) — Checklist de demo (5-10 min)
-- [VERIFICACION_E2E.md](VERIFICACION_E2E.md) — Verificacion automatizada + smoke Playwright + criterios E2E
-- [INDICE_PROYECTO.md](INDICE_PROYECTO.md) — Mapa técnico del proyecto
-- [EJECUTAR_PROYECTO.md](EJECUTAR_PROYECTO.md) — Guía paso a paso
-- [CONFIGURACION_METAMASK.md](CONFIGURACION_METAMASK.md) — Configuración de MetaMask
-- [GUIA_RAPIDA_METAMASK.md](GUIA_RAPIDA_METAMASK.md) — Referencia rápida
-- [EXPLICACION_DEL_PROYECTO.md](EXPLICACION_DEL_PROYECTO.md) — Mejoras de seguridad del contrato
+- [DOCUMENTO_ENTREGA.md](DOCUMENTO_ENTREGA.md)
+- [INDICE_PROYECTO.md](INDICE_PROYECTO.md)
+- [EXPLICACION_DEL_PROYECTO.md](EXPLICACION_DEL_PROYECTO.md)
 
 ## Autor
 
-Proyecto final — CodeCripto Academy
+- **Proyecto:** Supply Chain Tracker — CodeCripto Academy
+- **Rama de trabajo:** `entrega-proyecto-final`
+
+## Licencia
+
+MIT License — ver [LICENSE](LICENSE)
